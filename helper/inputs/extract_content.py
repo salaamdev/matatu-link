@@ -3,6 +3,7 @@ import os
 EXCLUDED_FOLDERS = {
     "node_modules",
     ".git",
+    "helper",
 }
 EXCLUDED_EXTENSIONS = {
     ".jpg",
@@ -60,13 +61,13 @@ def write_file_paths_and_content(root_directory, output_file):
 
 if __name__ == "__main__":
     # For backend folder
-    backend_root_directory = r"../../backend"
+    backend_root_directory = r"../../../matatu-link/backend"
     backend_output_file = r"../outputs/backend_content.txt"
     write_file_paths_and_content(backend_root_directory, backend_output_file)
     print(f"File paths and contents written to {backend_output_file}")
 
     # For frontend folder
-    frontend_root_directory = r"../frontend"
+    frontend_root_directory = r"../../../matatu-link/frontend"
     frontend_output_file = r"../outputs/frontend_content.txt"
     write_file_paths_and_content(frontend_root_directory, frontend_output_file)
     print(f"File paths and contents written to {frontend_output_file}")
