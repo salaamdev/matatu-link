@@ -25,6 +25,12 @@ sudo -i -u postgres
 psql
 ```
 
+on windows:
+
+```bash
+psql -U postgres
+```
+
 Create a new database user with a password:
 
 ```sql
