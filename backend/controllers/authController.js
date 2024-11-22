@@ -54,7 +54,7 @@ exports.login = async (req, res) => {
             where: {email},
             include: [{
                 model: UserRole,
-                as: 'role'
+                as: 'role' // Ensure this matches the alias in index.js
             }]
         });
 

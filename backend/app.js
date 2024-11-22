@@ -12,6 +12,15 @@ const authRoutes = require('./routes/authRoutes');
 const matatuRoutes = require('./routes/matatuRoutes');
 const routeRoutes = require('./routes/routeRoutes');
 const stopRoutes = require('./routes/stopRoutes');
+const contributionRoutes = require('./routes/contributionRoutes');
+const voteRoutes = require('./routes/voteRoutes');
+const reportRoutes = require('./routes/reportRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const fareRoutes = require('./routes/fareRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+
+
+
 
 dotenv.config();
 
@@ -28,6 +37,14 @@ app.use('/api/auth', authRoutes);
 app.use('/api/matatus', matatuRoutes);
 app.use('/api/routes', routeRoutes);
 app.use('/api/stops', stopRoutes);
+app.use('/api/contributions', contributionRoutes);
+app.use('/api/votes', voteRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/fares', fareRoutes);
+app.use('/api/payments', paymentRoutes);
+
+
 
 // Socket.io setup
 io.on('connection', (socket) => {
