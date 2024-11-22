@@ -1,4 +1,5 @@
-const {Matatu} = require('../models');
+// controllers/matatuController.js
+const {Matatu, Route} = require('../models'); // Import Route
 
 exports.getAllMatatus = async (req, res) => {
     try {

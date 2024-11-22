@@ -24,6 +24,7 @@ EXCLUDED_FILES = {
     "EXPORT_IMPORT.md",
     "PEER_ERROR.md",
     "QUERIES.md",
+    "POPULATINGDB.md",
     "README.md",
     "package-lock.json",
     "test.json",

@@ -207,10 +207,13 @@ ALTER TABLE operators
 ADD COLUMN user_id INTEGER REFERENCES users(user_id);
 ```
 
-create an admin role:
+create an admin and operator role:
 
 ```sql
-INSERT INTO user_roles (role_name) VALUES ('admin');
+-- Insert roles if they don't exist
+INSERT INTO user_roles (role_id, role_name) VALUES (1, 'admin') ON CONFLICT DO NOTHING;
+INSERT INTO user_roles (role_id, role_name) VALUES (2, 'operator') ON CONFLICT DO NOTHING;
+
 ```
 
 **4. Integrate PostgreSQL with a React Native App**
