@@ -14,12 +14,12 @@ router.get('/', matatuController.getAllMatatus);
 router.get('/:id', matatuController.getMatatuById);
 
 // POST /api/matatus - Create a new matatu (restricted to operators and admins)
-router.post('/', rbacMiddleware(['operator', 'admin']), matatuController.createMatatu);
+router.post('/', rbacMiddleware([2, 1]), matatuController.createMatatu);
 
 // PUT /api/matatus/:id - Update an existing matatu (restricted to operators and admins)
-router.put('/:id', rbacMiddleware(['operator', 'admin']), matatuController.updateMatatu);
+router.put('/:id', rbacMiddleware([2, 1]), matatuController.updateMatatu);
 
 // DELETE /api/matatus/:id - Delete a matatu (restricted to admins)
-router.delete('/:id', rbacMiddleware(['admin']), matatuController.deleteMatatu);
+router.delete('/:id', rbacMiddleware([1]), matatuController.deleteMatatu);
 
 module.exports = router;

@@ -14,12 +14,12 @@ router.get('/', stopController.getAllStops);
 router.get('/:id', stopController.getStopById);
 
 // POST /api/stops - Create a new stop (restricted to admins)
-router.post('/', rbacMiddleware(['admin']), stopController.createStop);
+router.post('/', rbacMiddleware([1]), stopController.createStop);
 
 // PUT /api/stops/:id - Update an existing stop (restricted to admins)
-router.put('/:id', rbacMiddleware(['admin']), stopController.updateStop);
+router.put('/:id', rbacMiddleware([1]), stopController.updateStop);
 
 // DELETE /api/stops/:id - Delete a stop (restricted to admins)
-router.delete('/:id', rbacMiddleware(['admin']), stopController.deleteStop);
+router.delete('/:id', rbacMiddleware([1]), stopController.deleteStop);
 
 module.exports = router;

@@ -3,6 +3,10 @@ const Matatu = require('./Matatu');
 const Route = require('./Route');
 const Stop = require('./Stop');
 const Operator = require('./Operator');
+const UserRole = require('./UserRole');
+const User = require('./User');
+const MatatuLocation = require('./MatatuLocation');
+
 
 Matatu.belongsTo(Route, {
     foreignKey: 'route_id',
@@ -31,9 +35,35 @@ Stop.belongsToMany(Route, {
     as: 'routes',
 });
 
+
+// User Role relationships
+User.belongsTo(UserRole, {
+    foreignKey: 'role_id',
+    as: 'role'
+});
+
+UserRole.hasMany(User, {
+    foreignKey: 'role_id',
+    as: 'users'
+});
+
+// Matatu Location relationships
+Matatu.hasMany(MatatuLocation, {
+    foreignKey: 'matatu_id',
+    as: 'locations'
+});
+
+MatatuLocation.belongsTo(Matatu, {
+    foreignKey: 'matatu_id',
+    as: 'matatu'
+});
+
 module.exports = {
     Matatu,
     Route,
     Stop,
     Operator,
+    UserRole,
+    MatatuLocation,
+    User
 };

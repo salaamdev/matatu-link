@@ -1,0 +1,158 @@
+{
+  "info": {
+    "name": "Matatu Routes",
+    "_postman_id": "unique-id-1234",
+    "description": "Collection to test Matatu API routes",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Matatus",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MzIyMTQ4MTUsImV4cCI6MTczMjIxODQxNX0.JZJrucN2oyG3xP0VeYupOHaSDgjNOLfUXc-DxCMzbJ0",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/matatus",
+          "host": ["{{base_url}}"],
+          "path": ["api", "matatus"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Matatu By ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MzIyMTQ4MTUsImV4cCI6MTczMjIxODQxNX0.JZJrucN2oyG3xP0VeYupOHaSDgjNOLfUXc-DxCMzbJ0",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/matatus/:id",
+          "host": ["{{base_url}}"],
+          "path": ["api", "matatus", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Matatu",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MzIyMTQ4MTUsImV4cCI6MTczMjIxODQxNX0.JZJrucN2oyG3xP0VeYupOHaSDgjNOLfUXc-DxCMzbJ0",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": JSON.stringify({
+            "registration_number": "ABC-1234",
+            "route_id": 1,
+            "capacity": 20,
+            "model": "Model X",
+            "make": "Make Y",
+            "year": 2020
+          }, null, 2)
+        },
+        "url": {
+          "raw": "{{base_url}}/api/matatus",
+          "host": ["{{base_url}}"],
+          "path": ["api", "matatus"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Matatu",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MzIyMTQ4MTUsImV4cCI6MTczMjIxODQxNX0.JZJrucN2oyG3xP0VeYupOHaSDgjNOLfUXc-DxCMzbJ0",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": JSON.stringify({
+            "capacity": 25,
+            "current_status": "maintenance"
+          }, null, 2)
+        },
+        "url": {
+          "raw": "{{base_url}}/api/matatus/:id",
+          "host": ["{{base_url}}"],
+          "path": ["api", "matatus", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Matatu",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MzIyMTQ4MTUsImV4cCI6MTczMjIxODQxNX0.JZJrucN2oyG3xP0VeYupOHaSDgjNOLfUXc-DxCMzbJ0",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/matatus/:id",
+          "host": ["{{base_url}}"],
+          "path": ["api", "matatus", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ]
+}

@@ -196,6 +196,23 @@ CREATE TABLE notifications (
 );
 ```
 
+Alter the following tables:
+
+```sql
+ALTER TABLE matatus
+ADD COLUMN make VARCHAR(50),
+ADD COLUMN year INTEGER CHECK (year >= 1900 AND year <= date_part('year', CURRENT_DATE));
+
+ALTER TABLE operators
+ADD COLUMN user_id INTEGER REFERENCES users(user_id);
+```
+
+create an admin role:
+
+```sql
+INSERT INTO user_roles (role_name) VALUES ('admin');
+```
+
 **4. Integrate PostgreSQL with a React Native App**
 
 To connect your React Native app to the PostgreSQL database, you'll need to set up a backend server. A common approach is to use Node.js with Express.js to create RESTful APIs that your React Native app can interact with.

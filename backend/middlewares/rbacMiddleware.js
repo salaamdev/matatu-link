@@ -1,9 +1,8 @@
-const rbacMiddleware = (allowedRoles) => {
+const rbacMiddleware = (allowedRoleIds) => {
     return (req, res, next) => {
-        // Get user role from the JWT token set by authMiddleware
-        const userRole = req.user?.role;
+        const userRoleId = req.user?.roleId; // This matches the token payload
 
-        if (!userRole || !allowedRoles.includes(userRole)) {
+        if (!userRoleId || !allowedRoleIds.includes(userRoleId)) {
             return res.status(403).json({message: 'Access forbidden - Insufficient permissions'});
         }
 

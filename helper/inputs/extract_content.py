@@ -11,10 +11,10 @@ EXCLUDED_EXTENSIONS = {
     ".png",
     ".svg",
     ".gif",
-    ".db",
-    ".md",
-    ".json",
-    ".sqlite",
+    # ".db",
+    # ".md",
+    # ".json",
+    # ".sqlite",
     ".PDF",
     ".pdf",
     ".css",
@@ -61,13 +61,13 @@ def write_file_paths_and_content(root_directory, output_file):
 
 if __name__ == "__main__":
     # For backend folder
-    backend_root_directory = r"../../../matatu-link/backend"
-    backend_output_file = r"../outputs/backend_content.txt"
+    backend_root_directory = r"../../../matatu-link/"
+    backend_output_file = r"../outputs/content.txt"
     write_file_paths_and_content(backend_root_directory, backend_output_file)
     print(f"File paths and contents written to {backend_output_file}")
 
     # For frontend folder
-    frontend_root_directory = r"../../../matatu-link/frontend"
-    frontend_output_file = r"../outputs/frontend_content.txt"
-    write_file_paths_and_content(frontend_root_directory, frontend_output_file)
-    print(f"File paths and contents written to {frontend_output_file}")
+    # frontend_root_directory = r"../../../matatu-link/frontend"
+    # frontend_output_file = r"../outputs/frontend_content.txt"
+    # write_file_paths_and_content(frontend_root_directory, frontend_output_file)
+    # print(f"File paths and contents written to {frontend_output_file}")
