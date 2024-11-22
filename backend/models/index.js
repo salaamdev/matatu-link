@@ -1,4 +1,4 @@
-// backend/models/index.js
+// models/index.js
 const Matatu = require('./Matatu');
 const Route = require('./Route');
 const Stop = require('./Stop');
@@ -7,19 +7,17 @@ const UserRole = require('./UserRole');
 const User = require('./User');
 const MatatuLocation = require('./MatatuLocation');
 
-
 Matatu.belongsTo(Route, {
     foreignKey: 'route_id',
     as: 'route',
 });
 
-// Route has many Matatus
 Route.hasMany(Matatu, {
     foreignKey: 'route_id',
     as: 'matatus',
 });
 
-// Route belongs to many Stops through RouteStops
+// Define many-to-many between Route and Stop
 Route.belongsToMany(Stop, {
     through: 'RouteStops',
     foreignKey: 'route_id',
@@ -27,7 +25,6 @@ Route.belongsToMany(Stop, {
     as: 'stops',
 });
 
-// Stop belongs to many Routes through RouteStops
 Stop.belongsToMany(Route, {
     through: 'RouteStops',
     foreignKey: 'stop_id',
@@ -35,8 +32,7 @@ Stop.belongsToMany(Route, {
     as: 'routes',
 });
 
-
-// User Role relationships
+// User and UserRole associations
 User.belongsTo(UserRole, {
     foreignKey: 'role_id',
     as: 'role'
@@ -47,7 +43,7 @@ UserRole.hasMany(User, {
     as: 'users'
 });
 
-// Matatu Location relationships
+// Matatu and MatatuLocation associations
 Matatu.hasMany(MatatuLocation, {
     foreignKey: 'matatu_id',
     as: 'locations'

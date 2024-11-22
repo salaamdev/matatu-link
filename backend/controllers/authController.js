@@ -5,10 +5,24 @@ const {validationResult} = require('express-validator');
 
 exports.register = async (req, res) => {
     try {
-        const {username, email, password, phone_number, role_id} = req.body;
-        const password_hash = await bcrypt.hash(password, 10);
-        if (existingUser) return res.status(400).json({message: 'Email already in use'});
+        // Handle validation errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({errors: errors.array()});
+        }
 
+        const {username, email, password, phone_number, role_id} = req.body;
+
+        // Check if user already exists
+        const existingUser = await User.findOne({where: {email}});
+        if (existingUser) {
+            return res.status(400).json({message: 'Email already in use'});
+        }
+
+        // Hash the password
+        const password_hash = await bcrypt.hash(password, 10);
+
+        // Create new user with role_id or default to operator role (2)
         const newUser = await User.create({
             username,
             email,
@@ -27,12 +41,13 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const {email, password} = req.body;
-
-        // Validate required fields
-        if (!email || !password) {
-            return res.status(400).json({message: 'Email and password are required'});
+        // Handle validation errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({errors: errors.array()});
         }
+
+        const {email, password} = req.body;
 
         // Find user with role information
         const user = await User.findOne({
@@ -57,7 +72,7 @@ exports.login = async (req, res) => {
         // Create JWT token using the correct field names
         const token = jwt.sign({
             userId: user.user_id,
-            roleId: user.role_id,
+            roleId: user.role_id, // Ensure this is an integer
             roleName: user.role?.role_name
         }, process.env.JWT_SECRET, {expiresIn: '1h'});
 

@@ -20,13 +20,21 @@ EXCLUDED_EXTENSIONS = {
     ".css",
 }
 EXCLUDED_FILES = {
-    ".gitignore",
+    # ".gitignore",
+    "EXPORT_IMPORT.md",
+    "PEER_ERROR.md",
+    "QUERIES.md",
+    "README.md",
+    "package-lock.json",
+    "test.json",
+    "dbtest.json",
 }
 # "package.json",
 # "package-lock.json",
 
 
 def write_file_paths_and_content(root_directory, output_file):
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
     with open(output_file, "w", encoding="utf-8") as out_file:
         for foldername, subfolders, filenames in os.walk(root_directory):
             # Remove excluded folders from traversal
@@ -61,7 +69,7 @@ def write_file_paths_and_content(root_directory, output_file):
 
 if __name__ == "__main__":
     # For backend folder
-    backend_root_directory = r"../../../matatu-link/"
+    backend_root_directory = r"/home/salaam/Documents/code/matatu-link/"
     backend_output_file = r"../outputs/content.txt"
     write_file_paths_and_content(backend_root_directory, backend_output_file)
     print(f"File paths and contents written to {backend_output_file}")

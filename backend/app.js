@@ -5,6 +5,7 @@ const cors = require('cors');
 const http = require('http');
 const socketIo = require('socket.io');
 const sequelize = require('./config/database');
+const models = require('./models'); // Ensure models are imported to set up associations
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
@@ -52,7 +53,7 @@ const PORT = process.env.PORT || 5000;
 sequelize.authenticate()
     .then(() => {
         console.log('Database connected...');
-        return sequelize.sync();
+        return sequelize.sync(); // Ensure all models are synced
     })
     .then(() => {
         server.listen(PORT, () => console.log(`Server running on port ${ PORT }`));

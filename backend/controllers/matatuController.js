@@ -37,6 +37,14 @@ exports.createMatatu = async (req, res) => {
     }
 
     try {
+        // Check if route exists
+        if (route_id) {
+            const route = await Route.findByPk(route_id);
+            if (!route) {
+                return res.status(400).json({error: 'Invalid route_id - route does not exist'});
+            }
+        }
+
         const newMatatu = await Matatu.create({
             registration_number,
             route_id,
