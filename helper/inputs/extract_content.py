@@ -4,6 +4,9 @@ EXCLUDED_FOLDERS = {
     "node_modules",
     ".git",
     "helper",
+    # "assets",
+    ".expo",
+    "__tests__",
 }
 EXCLUDED_EXTENSIONS = {
     ".jpg",
