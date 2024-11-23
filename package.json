@@ -22,7 +22,9 @@
     "firebase-admin": "^13.0.1",
     "jsonwebtoken": "^9.0.2",
     "qs": "^6.13.1",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "expo-secure-store": "~12.0.0",
+    "@react-native-async-storage/async-storage": "~1.17.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.7",
