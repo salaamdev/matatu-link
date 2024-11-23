@@ -65,6 +65,7 @@ app.use((err, req, res, next) => {
 });
 
 // Database connection and server start
+
 const PORT = process.env.PORT || 5000;
 
 sequelize.authenticate()
@@ -73,6 +74,6 @@ sequelize.authenticate()
         return sequelize.sync(); // Ensure all models are synced
     })
     .then(() => {
-        server.listen(PORT, () => console.log(`Server running on port ${ PORT }`));
+        server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${ PORT }`));
     })
     .catch(err => console.log('Database connection error:', err));
