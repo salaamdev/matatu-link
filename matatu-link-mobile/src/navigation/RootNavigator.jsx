@@ -1,4 +1,4 @@
-// matatu-link-mobile/src/navigation/RootNavigator.jsx
+// src/navigation/RootNavigator.jsx
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth } from "../contexts/AuthContext";
@@ -12,7 +12,7 @@ export default function RootNavigator() {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <LoadingScreen />;
+    return <LoadingScreen />; // Show loading indicator while initializing
   }
 
   return (

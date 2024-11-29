@@ -1,4 +1,4 @@
-// matatu-link-mobile/src/screens/auth/LoadingScreen.jsx
+// src/screens/auth/LoadingScreen.jsx
 import React from "react";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
 

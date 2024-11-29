@@ -1,27 +1,23 @@
-// matatu-link-mobile/src/contexts/AuthContext.jsx
+// src/contexts/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import api, { setAuthToken } from "../api/config";
+import { Alert } from "react-native";
+import api, { setAuthToken, initializeAxios } from "../api/config";
 
-const AuthContext = createContext({});
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null); // Stores user data
+  const [loading, setLoading] = useState(true); // Loading state during initialization
 
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const token = await AsyncStorage.getItem("userToken");
-        if (token) {
-          setAuthToken(token);
-          // Attempt to fetch user profile
-          const response = await api.get("/auth/profile");
-          setUser(response.data);
-        }
+        await initializeAxios();
+        const response = await api.get("/auth/profile");
+        setUser(response.data); // Assuming the profile endpoint returns user data
       } catch (error) {
-        console.error("Auth initialization error:", error);
-        // Optionally, remove invalid token
+        console.log("Auth initialization error:", error.message);
+        // Token might be invalid or expired; ensure it's removed
         await setAuthToken(null);
       } finally {
         setLoading(false);
@@ -31,41 +27,52 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
-  const login = async (credentials) => {
+  // Login function
+  const login = async ({ email, password }) => {
     try {
-      const response = await api.post("/auth/login", credentials);
+      const response = await api.post("/auth/login", { email, password });
       const { token, user } = response.data;
       await setAuthToken(token);
       setUser(user);
-      return response.data;
     } catch (error) {
-      // Extract meaningful error messages
-      const message = error.errors
-        ? error.errors.map((err) => err.msg).join("\n")
-        : error.message || "An error occurred during login.";
-      throw new Error(message);
+      console.log(
+        "Login error:",
+        error.response?.data?.message || error.message
+      );
+      throw new Error(error.response?.data?.message || "Login failed");
     }
   };
 
-  const register = async (userData) => {
+  // Register function
+  const register = async ({ username, email, password, phone_number }) => {
     try {
-      const response = await api.post("/auth/register", userData);
-      return response.data;
+      const response = await api.post("/auth/register", {
+        username,
+        email,
+        password,
+        phone_number,
+      });
+      Alert.alert(
+        "Success",
+        response.data.message || "Registration successful"
+      );
     } catch (error) {
-      // Extract meaningful error messages
-      const message = error.errors
-        ? error.errors.map((err) => err.msg).join("\n")
-        : error.message || "An error occurred during registration.";
-      throw new Error(message);
+      console.log(
+        "Registration error:",
+        error.response?.data?.message || error.message
+      );
+      throw new Error(error.response?.data?.message || "Registration failed");
     }
   };
 
+  // Logout function
   const logout = async () => {
     try {
       await setAuthToken(null);
       setUser(null);
     } catch (error) {
-      console.error("Logout error:", error);
+      console.log("Logout error:", error.message);
+      Alert.alert("Error", "Failed to logout");
     }
   };
 
@@ -76,4 +83,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+// Custom hook to use the AuthContext
 export const useAuth = () => useContext(AuthContext);
