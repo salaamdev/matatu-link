@@ -1,34 +1,24 @@
 // src/screens/home/HomeScreen.jsx
 
-import React, { useState } from "react";
-import { View, StyleSheet, Alert } from "react-native";
-import MapViewComponent from "./components/MapViewComponent";
-import SearchBar from "./components/SearchBar";
-import { Ionicons } from "@expo/vector-icons"; // For additional icons if needed
+import React, { useState, useRef } from 'react';
+import { View, StyleSheet } from 'react-native';
+import MapViewComponent from './components/MapViewComponent';
+import SearchBar from './components/SearchBar';
 
 const HomeScreen = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const mapRef = useRef(null);
 
-  const handleSearchSubmit = () => {
-    if (searchQuery.trim() === "") {
-      Alert.alert("Input Required", "Please enter a destination.");
-      return;
-    }
-
-    // TODO: Implement search functionality
-    // For example, navigate to a search results screen or fetch data from backend
-    Alert.alert("Search", `You searched for: ${searchQuery}`);
+  const handleLocationSelect = (location) => {
+    setSelectedLocation(location);
+    // The MapViewComponent handles animating to the selected location
   };
 
   return (
     <View style={styles.container}>
-      <MapViewComponent />
-      <SearchBar
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onSubmit={handleSearchSubmit}
-      />
-      {/* You can add more UI components here, such as buttons for quick actions */}
+      <MapViewComponent selectedLocation={selectedLocation} ref={mapRef} />
+      <SearchBar onLocationSelect={handleLocationSelect} />
+      {/* Additional UI components can be added here */}
     </View>
   );
 };

@@ -1,14 +1,30 @@
 // src/screens/home/components/MapViewComponent.jsx
 
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { StyleSheet, ActivityIndicator, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
+import axios from "axios";
 
-const MapViewComponent = () => {
+const MapViewComponent = forwardRef(({ selectedLocation }, ref) => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [matatuLocations, setMatatuLocations] = useState([]); // Replace with real data fetching
+
+  useImperativeHandle(ref, () => ({
+    animateToRegion: (region, duration) => {
+      if (mapRef.current) {
+        mapRef.current.animateToRegion(region, duration);
+      }
+    },
+  }));
+
+  const mapRef = React.useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -40,6 +56,20 @@ const MapViewComponent = () => {
     })();
   }, []);
 
+  useEffect(() => {
+    if (selectedLocation && mapRef.current) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: selectedLocation.latitude,
+          longitude: selectedLocation.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        },
+        1000
+      );
+    }
+  }, [selectedLocation]);
+
   if (!location) {
     return (
       <View style={styles.loaderContainer}>
@@ -50,8 +80,9 @@ const MapViewComponent = () => {
 
   return (
     <MapView
+      ref={mapRef}
       style={styles.map}
-      region={{
+      initialRegion={{
         latitude: location.latitude,
         longitude: location.longitude,
         latitudeDelta: 0.05,
@@ -70,9 +101,19 @@ const MapViewComponent = () => {
           description="Matatu Location"
         />
       ))}
+      {selectedLocation && (
+        <Marker
+          coordinate={{
+            latitude: selectedLocation.latitude,
+            longitude: selectedLocation.longitude,
+          }}
+          title="Selected Location"
+          pinColor="blue"
+        />
+      )}
     </MapView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   map: {
