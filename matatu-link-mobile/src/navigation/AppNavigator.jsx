@@ -3,7 +3,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomeScreen from '../screens/HomeScreen';
+import HomeScreen from '../screens/home/HomeScreen';
 import TrackMatatusScreen from '../screens/TrackMatatusScreen'; // Placeholder
 import RoutesScreen from '../screens/RoutesScreen'; // Placeholder
 import FarePaymentScreen from '../screens/FarePaymentScreen'; // Placeholder

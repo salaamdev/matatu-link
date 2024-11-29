@@ -33,8 +33,6 @@ EXCLUDED_FILES = {
     "test.json",
     "dbtest.json",
 }
-# "package.json",
-# "package-lock.json",
 
 
 def write_file_paths_and_content(root_directory, output_file):

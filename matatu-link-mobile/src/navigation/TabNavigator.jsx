@@ -2,7 +2,7 @@
 
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../screens/HomeScreen";
+import HomeScreen from "../screens/home/HomeScreen";
 import MatatuListScreen from "../screens/matatu/MatatusScreen";
 import RoutesScreen from "../screens/routes/RoutesScreen";
 import PaymentScreen from "../screens/payment/PaymentScreen";
