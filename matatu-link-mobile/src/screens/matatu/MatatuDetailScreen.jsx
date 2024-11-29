@@ -83,44 +83,52 @@ const MatatuDetailScreen = ({ route, navigation }) => {
     <ScrollView contentContainerStyle={styles.container}>
       <Card style={styles.card}>
         <Card.Title
-          title={matatu.registration_number}
-          subtitle={`Model: ${matatu.model} | Capacity: ${matatu.capacity}`}
+          title={matatu?.registration_number || "Unknown"}
+          subtitle={`Model: ${matatu?.model || "N/A"} | Capacity: ${
+            matatu?.capacity || "N/A"
+          }`}
           left={(props) => <Ionicons name="bus" size={24} color="#007AFF" />}
         />
         <Card.Content>
-          <Text style={styles.detailText}>Make: {matatu.make}</Text>
-          <Text style={styles.detailText}>Year: {matatu.year}</Text>
+          <Text style={styles.detailText}>Make: {matatu?.make || "N/A"}</Text>
+          <Text style={styles.detailText}>Year: {matatu?.year || "N/A"}</Text>
           <Text style={styles.detailText}>
-            Route: {matatu.route.route_name}
+            Route: {matatu?.route?.route_name || "Not Assigned"}
           </Text>
           <Text style={styles.detailText}>
-            Operator: {matatu.operator.name}
+            Operator: {matatu?.operator?.name || "Not Assigned"}
           </Text>
-          <Text style={styles.detailText}>Status: {matatu.current_status}</Text>
+          <Text style={styles.detailText}>
+            Status: {matatu?.current_status || "Unknown"}
+          </Text>
         </Card.Content>
       </Card>
 
-      <View style={styles.mapContainer}>
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: matatu.location.latitude,
-            longitude: matatu.location.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          }}
-          showsUserLocation={true}
-        >
-          <Marker
-            coordinate={{
+      {matatu?.location && (
+        <View style={styles.mapContainer}>
+          <MapView
+            style={styles.map}
+            initialRegion={{
               latitude: matatu.location.latitude,
               longitude: matatu.location.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
             }}
-            title={matatu.registration_number}
-            description={`Route: ${matatu.route.route_name}`}
-          />
-        </MapView>
-      </View>
+            showsUserLocation={true}
+          >
+            <Marker
+              coordinate={{
+                latitude: matatu.location.latitude,
+                longitude: matatu.location.longitude,
+              }}
+              title={matatu.registration_number}
+              description={`Route: ${
+                matatu?.route?.route_name || "Not Assigned"
+              }`}
+            />
+          </MapView>
+        </View>
+      )}
     </ScrollView>
   );
 };

@@ -155,6 +155,16 @@ Fare.hasMany(Payment, {
     as: 'farePayments',
 });
 
+Matatu.belongsTo(Operator, {
+    foreignKey: 'operator_id',
+    as: 'matatu_operator',
+});
+
+Operator.hasMany(Matatu, {
+    foreignKey: 'operator_id',
+    as: 'operatorMatatus',
+});
+
 module.exports = {
     Matatu,
     Route,

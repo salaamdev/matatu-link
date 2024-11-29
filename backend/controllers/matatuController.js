@@ -1,9 +1,22 @@
-// controllers/matatuController.js
-const {Matatu, Route} = require('../models'); // Import Route
+const {Matatu, Route, Operator} = require('../models');
 
 exports.getAllMatatus = async (req, res) => {
     try {
-        const matatus = await Matatu.findAll();
+        // backend/controllers/matatuController.js
+        const matatus = await Matatu.findAll({
+            include: [
+                {
+                    model: Route,
+                    as: 'assignedRoute',
+                    attributes: ['route_id', 'route_name', 'description']
+                },
+                {
+                    model: Operator,
+                    as: 'matatu_operator',
+                    attributes: ['operator_id', 'name']
+                }
+            ]
+        });
         res.status(200).json(matatus);
     } catch (error) {
         console.error('Error fetching matatus:', error);
