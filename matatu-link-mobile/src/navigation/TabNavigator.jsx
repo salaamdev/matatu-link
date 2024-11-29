@@ -3,11 +3,11 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreen";
-import MatatuListScreen from "../screens/matatu/MatatuListScreen";
+import MatatuListScreen from "../screens/matatu/MatatusScreen";
 import RoutesScreen from "../screens/routes/RoutesScreen";
 import PaymentScreen from "../screens/payment/PaymentScreen";
 import ReportsScreen from "../screens/reports/ReportsScreen";
-import ProfileScreen from "../screens/ProfileScreen";
+import ProfileScreen from "../screens/profiles/ProfileScreen";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
