@@ -3,8 +3,8 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/home/HomeScreen";
-import MatatusStackNavigator from "./MatatusStackNavigator"; // Import MatatusStackNavigator
-import RoutesScreen from "../screens/routes/RoutesScreen";
+import MatatusStackNavigator from "./MatatusStackNavigator";
+import RoutesStackNavigator from "./RoutesStackNavigator"; // Import RoutesStackNavigator
 import PaymentScreen from "../screens/payment/PaymentScreen";
 import ReportsScreen from "../screens/reports/ReportsScreen";
 import ProfileScreen from "../screens/profiles/ProfileScreen";
@@ -65,7 +65,7 @@ export default function TabNavigator() {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Matatus" component={MatatusStackNavigator} />
-      <Tab.Screen name="Routes" component={RoutesScreen} />
+      <Tab.Screen name="Routes" component={RoutesStackNavigator} />
       <Tab.Screen name="Payment" component={PaymentScreen} />
       <Tab.Screen name="Reports" component={ReportsScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />

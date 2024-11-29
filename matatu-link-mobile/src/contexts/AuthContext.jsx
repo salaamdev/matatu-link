@@ -1,4 +1,5 @@
 // src/contexts/AuthContext.jsx
+
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { Alert } from "react-native";
 import api, { setAuthToken, initializeAxios } from "../api/config";
@@ -14,7 +15,7 @@ export const AuthProvider = ({ children }) => {
       try {
         await initializeAxios();
         const response = await api.get("/auth/profile");
-        setUser(response.data); // Assuming the profile endpoint returns user data
+        setUser(response.data); // Assuming the profile endpoint returns user data including role
       } catch (error) {
         console.log("Auth initialization error:", error.message);
         // Token might be invalid or expired; ensure it's removed
