@@ -8,7 +8,7 @@ import RoutesScreen from "../screens/routes/RoutesScreen";
 import PaymentScreen from "../screens/payment/PaymentScreen";
 import ReportsScreen from "../screens/reports/ReportsScreen";
 import ProfileScreen from "../screens/profiles/ProfileScreen";
-import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
 
@@ -27,9 +27,7 @@ export default function TabNavigator() {
               return <Ionicons name={iconName} size={size} color={color} />;
             case "Matatus":
               iconName = focused ? "bus" : "bus-outline";
-              return (
-                <MaterialIcons name={iconName} size={size} color={color} />
-              );
+              return <Ionicons name={iconName} size={size} color={color} />;
             case "Routes":
               iconName = focused ? "route" : "route";
               return (
@@ -41,7 +39,7 @@ export default function TabNavigator() {
                 <MaterialIcons name={iconName} size={size} color={color} />
               );
             case "Reports":
-              iconName = focused ? "report" : "report-outline";
+              iconName = focused ? "report" : "report-gmailerrorred";
               return (
                 <MaterialIcons name={iconName} size={size} color={color} />
               );
