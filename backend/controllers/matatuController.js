@@ -24,6 +24,8 @@ exports.getAllMatatus = async (req, res) => {
     }
 };
 
+// backend/controllers/matatuController.js
+
 exports.getMatatuById = async (req, res) => {
     const {id} = req.params;
     if (!id || isNaN(id)) {
@@ -35,13 +37,13 @@ exports.getMatatuById = async (req, res) => {
             include: [
                 {
                     model: Route,
-                    as: 'assignedRoute',
-                    attributes: ['route_id', 'route_name', 'description']
+                    as: 'matatuRoute',
+                    attributes: ['route_id', 'route_name', 'description', 'fare', 'is_active']
                 },
                 {
                     model: Operator,
                     as: 'matatu_operator',
-                    attributes: ['operator_id', 'name', 'contact_info']
+                    attributes: ['operator_id', 'name', 'contact_info', 'address'] // Removed license_number
                 }
             ]
         });

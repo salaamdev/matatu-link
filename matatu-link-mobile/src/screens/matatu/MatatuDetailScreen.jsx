@@ -17,8 +17,8 @@ import io from "socket.io-client";
 
 const SOCKET_SERVER_URL = "http://192.168.40.219:5000"; // Replace with your backend Socket.io URL
 
-const MatatuDetailScreen = ({ route, navigation }) => {
-  const { matatuId } = route.params;
+const MatatuDetailScreen = ({route, navigation}) => {
+  const {matatuId} = route.params;
   const [matatu, setMatatu] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -60,7 +60,7 @@ const MatatuDetailScreen = ({ route, navigation }) => {
 
   const fetchMatatuDetails = async () => {
     try {
-      const response = await api.get(`/matatus/${matatuId}`);
+      const response = await api.get(`/matatus/${ matatuId }`);
       setMatatu(response.data);
     } catch (error) {
       console.error("Error fetching matatu details:", error.message);
@@ -81,6 +81,7 @@ const MatatuDetailScreen = ({ route, navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      {/* Basic Details Card */}
       <Card style={styles.card}>
         <Card.Title
           title={matatu?.registration_number || "Unknown"}
@@ -93,41 +94,84 @@ const MatatuDetailScreen = ({ route, navigation }) => {
           <Text style={styles.detailText}>Make: {matatu?.make || "N/A"}</Text>
           <Text style={styles.detailText}>Year: {matatu?.year || "N/A"}</Text>
           <Text style={styles.detailText}>
-            Route: {matatu?.assignedRoute?.route_name || "Not Assigned"}
-          </Text>
-          <Text style={styles.detailText}>
-            Operator: {matatu?.matatu_operator?.name || "Not Assigned"}
-          </Text>
-          <Text style={styles.detailText}>
             Status: {matatu?.current_status || "Unknown"}
           </Text>
         </Card.Content>
       </Card>
-
+      {/* Route Information Card */}
+      <Card style={[styles.card, styles.cardSpacing]}>
+        <Card.Title
+          title="Route Information"
+          left={(props) => <Ionicons name="map" size={24} color="#34C759" />}
+        />
+        <Card.Content>
+          <Text style={styles.detailText}>
+            Route Name: {matatu?.matatuRoute?.route_name || "Not Assigned"}
+          </Text>
+          <Text style={styles.detailText}>
+            Route Description: {matatu?.matatuRoute?.description || "N/A"}
+          </Text>
+          <Text style={styles.detailText}>
+            Fare: KES {matatu?.matatuRoute?.fare || "N/A"}
+          </Text>
+          <Text style={styles.detailText}>
+            Route Status:{" "}
+            {matatu?.matatuRoute?.is_active ? "Active" : "Inactive"}
+          </Text>
+        </Card.Content>
+      </Card>
+      // matatu-link-mobile/src/screens/matatu/MatatuDetailScreen.jsx
+      {/* Operator Information Card */}
+      <Card style={[styles.card, styles.cardSpacing]}>
+        <Card.Title
+          title="Operator Information"
+          left={(props) => <Ionicons name="person" size={24} color="#FF9500" />}
+        />
+        <Card.Content>
+          <Text style={styles.detailText}>
+            Operator Name: {matatu?.matatu_operator?.name || "Not Assigned"}
+          </Text>
+          <Text style={styles.detailText}>
+            Contact Info: {matatu?.matatu_operator?.contact_info || "N/A"}
+          </Text>
+          <Text style={styles.detailText}>
+            Address: {matatu?.matatu_operator?.address || "N/A"}
+          </Text>
+        </Card.Content>
+      </Card>
+      {/* Location Information Card */}
       {matatu?.location && (
-        <View style={styles.mapContainer}>
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: matatu.location.latitude,
-              longitude: matatu.location.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }}
-            showsUserLocation={true}
-          >
-            <Marker
-              coordinate={{
+        <Card style={[styles.card, styles.cardSpacing]}>
+          <Card.Title
+            title="Current Location"
+            left={(props) => (
+              <Ionicons name="location" size={24} color="#FF3B30" />
+            )}
+          />
+          <View style={styles.mapContainer}>
+            <MapView
+              style={styles.map}
+              initialRegion={{
                 latitude: matatu.location.latitude,
                 longitude: matatu.location.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
               }}
-              title={matatu.registration_number}
-              description={`Route: ${
-                matatu?.route?.route_name || "Not Assigned"
-              }`}
-            />
-          </MapView>
-        </View>
+              showsUserLocation={true}
+            >
+              <Marker
+                coordinate={{
+                  latitude: matatu.location.latitude,
+                  longitude: matatu.location.longitude,
+                }}
+                title={matatu.registration_number}
+                description={`Route: ${
+                  matatu?.matatuRoute?.route_name || "Not Assigned"
+                }`}
+              />
+            </MapView>
+          </View>
+        </Card>
       )}
     </ScrollView>
   );
@@ -137,6 +181,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     backgroundColor: "#ffffff",
+    paddingBottom: 20,
   },
   loaderContainer: {
     flex: 1,
@@ -147,13 +192,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 3,
   },
+  cardSpacing: {
+    marginTop: 15,
+  },
   detailText: {
-    fontSize: 16,
-    marginTop: 5,
+    fontSize: 14,
+    marginVertical: 4,
+    color: "#333333",
   },
   mapContainer: {
     height: 300,
-    marginTop: 20,
+    marginTop: 10,
     borderRadius: 10,
     overflow: "hidden",
     elevation: 3,

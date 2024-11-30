@@ -1,8 +1,8 @@
 // src/screens/matatu/components/MatatuItem.jsx
 
 import React from "react";
-import { TouchableOpacity, StyleSheet, View } from "react-native";
-import { Card, Text } from "react-native-paper"; // Import Text from react-native-paper
+import { TouchableOpacity, StyleSheet } from "react-native";
+import { Card, Text } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 
 const MatatuItem = ({ matatu, onPress }) => {
@@ -11,18 +11,20 @@ const MatatuItem = ({ matatu, onPress }) => {
       <Card style={styles.card}>
         <Card.Title
           title={matatu.registration_number || "Unknown"}
-          subtitle={`Model: ${matatu.model || 'N/A'} | Capacity: ${matatu.capacity || 'N/A'}`}
+          subtitle={`Model: ${matatu.model || "N/A"} | Capacity: ${
+            matatu.capacity || "N/A"
+          }`}
           left={(props) => <Ionicons name="bus" size={24} color="#007AFF" />}
         />
         <Card.Content>
           <Text style={styles.detailText}>
-            Route: {matatu.route?.route_name || 'Not Assigned'}
+            Route: {matatu.matatuRoute?.route_name || "Not Assigned"}
           </Text>
           <Text style={styles.detailText}>
-            Operator: {matatu.operator?.name || 'Not Assigned'}
+            Operator: {matatu.matatu_operator?.name || "Not Assigned"}
           </Text>
           <Text style={styles.detailText}>
-            Status: {matatu.current_status || 'Unknown'}
+            Status: {matatu.current_status || "Unknown"}
           </Text>
         </Card.Content>
       </Card>
@@ -42,4 +44,5 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 });
+
 export default MatatuItem;

@@ -1,5 +1,4 @@
 // src/screens/routes/RouteDetailScreen.jsx
-
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -7,9 +6,8 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
-  TouchableOpacity,
 } from "react-native";
-import { Text, Card, Button, List } from "react-native-paper";
+import { Text, Card, Button, List, Divider } from "react-native-paper";
 import { getRouteById, deleteRoute } from "../../api/routes";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useAuth } from "../../contexts/AuthContext";
@@ -75,10 +73,11 @@ const RouteDetailScreen = ({ route, navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      {/* Basic Route Information Card */}
       <Card style={styles.card}>
         <Card.Title
           title={routeData.route_name || "Unnamed Route"}
-          subtitle={`Fare: KES ${routeData.fare || "N/A"}`}
+          subtitle={`Route ID: ${routeData.route_id}`}
           left={(props) => <Ionicons name="route" size={24} color="#007AFF" />}
         />
         <Card.Content>
@@ -88,36 +87,108 @@ const RouteDetailScreen = ({ route, navigation }) => {
           <Text style={styles.detailText}>
             Status: {routeData.is_active ? "Active" : "Inactive"}
           </Text>
-          {/* Display connected stops if available */}
-          {routeData.connectedStops && routeData.connectedStops.length > 0 && (
-            <View style={styles.listContainer}>
-              <Text style={styles.listTitle}>Connected Stops:</Text>
-              {routeData.connectedStops.map((stop) => (
-                <List.Item
-                  key={stop.stop_id}
-                  title={stop.stop_name}
-                  left={(props) => <List.Icon {...props} icon="map-marker" />}
-                />
-              ))}
-            </View>
+        </Card.Content>
+      </Card>
+
+      {/* Fare Information Card */}
+      <Card style={[styles.card, styles.cardSpacing]}>
+        <Card.Title
+          title="Fare Information"
+          left={(props) => (
+            <MaterialIcons name="payments" size={24} color="#34C759" />
           )}
-          {/* Display assigned matatus if available */}
-          {routeData.routeMatatus && routeData.routeMatatus.length > 0 && (
-            <View style={styles.listContainer}>
-              <Text style={styles.listTitle}>Assigned Matatus:</Text>
-              {routeData.routeMatatus.map((matatu) => (
-                <List.Item
-                  key={matatu.matatu_id}
-                  title={matatu.registration_number}
-                  description={`Model: ${matatu.model || "N/A"}`}
-                  left={(props) => <List.Icon {...props} icon="bus" />}
-                />
-              ))}
-            </View>
+        />
+        <Card.Content>
+          <Text style={styles.detailText}>
+            Base Fare: KES {routeData.fare || "N/A"}
+          </Text>
+          <Text style={styles.detailText}>
+            Peak Hour Fare: KES {(routeData.fare * 1.2).toFixed(2) || "N/A"}
+          </Text>
+          <Text style={styles.detailText}>
+            Off-Peak Fare: KES {(routeData.fare * 0.9).toFixed(2) || "N/A"}
+          </Text>
+        </Card.Content>
+      </Card>
+
+      {/* Connected Stops Card */}
+      <Card style={[styles.card, styles.cardSpacing]}>
+        <Card.Title
+          title="Connected Stops"
+          left={(props) => (
+            <MaterialIcons name="route" size={24} color="#FF9500" />
+          )}
+        />
+        <Card.Content>
+          {routeData.connectedStops && routeData.connectedStops.length > 0 ? (
+            routeData.connectedStops.map((stop) => (
+              <List.Item
+                key={stop.stop_id}
+                title={stop.stop_name}
+                description={stop.description || "No description"}
+                left={(props) => (
+                  <MaterialIcons name="location-on" size={24} color="#007AFF" />
+                )}
+              />
+            ))
+          ) : (
+            <Text style={styles.emptyText}>
+              No stops assigned to this route
+            </Text>
           )}
         </Card.Content>
       </Card>
 
+      {/* Assigned Matatus Card */}
+      <Card style={[styles.card, styles.cardSpacing]}>
+        <Card.Title
+          title="Operating Matatus"
+          left={(props) => <Ionicons name="bus" size={24} color="#5856D6" />}
+        />
+        <Card.Content>
+          {routeData.routeMatatus && routeData.routeMatatus.length > 0 ? (
+            routeData.routeMatatus.map((matatu) => (
+              <List.Item
+                key={matatu.matatu_id}
+                title={matatu.registration_number}
+                description={`Model: ${matatu.model || "N/A"} | Capacity: ${
+                  matatu.capacity || "N/A"
+                }`}
+                left={(props) => (
+                  <Ionicons name="bus-outline" size={24} color="#007AFF" />
+                )}
+              />
+            ))
+          ) : (
+            <Text style={styles.emptyText}>
+              No matatus assigned to this route
+            </Text>
+          )}
+        </Card.Content>
+      </Card>
+
+      {/* Statistics Card */}
+      <Card style={[styles.card, styles.cardSpacing]}>
+        <Card.Title
+          title="Route Statistics"
+          left={(props) => (
+            <MaterialIcons name="analytics" size={24} color="#FF3B30" />
+          )}
+        />
+        <Card.Content>
+          <Text style={styles.detailText}>
+            Total Distance: {routeData.distance || "N/A"} km
+          </Text>
+          <Text style={styles.detailText}>
+            Average Travel Time: {routeData.avg_travel_time || "N/A"} minutes
+          </Text>
+          <Text style={styles.detailText}>
+            Daily Passengers: {routeData.daily_passengers || "N/A"}
+          </Text>
+        </Card.Content>
+      </Card>
+
+      {/* Admin Actions */}
       {user?.userRole?.role_name === "admin" && (
         <View style={styles.adminActions}>
           <Button
@@ -146,27 +217,26 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     backgroundColor: "#ffffff",
-  },
-  loaderContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    paddingBottom: 20,
   },
   card: {
     borderRadius: 10,
     elevation: 3,
   },
-  detailText: {
-    fontSize: 16,
-    marginTop: 5,
-  },
-  listContainer: {
+  cardSpacing: {
     marginTop: 15,
   },
-  listTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
+  detailText: {
+    fontSize: 14,
+    marginVertical: 4,
+    color: "#333333",
+  },
+  emptyText: {
+    fontSize: 14,
+    color: "#666666",
+    fontStyle: "italic",
+    textAlign: "center",
+    marginVertical: 10,
   },
   adminActions: {
     marginTop: 20,
@@ -178,6 +248,11 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     backgroundColor: "#FF3B30",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
