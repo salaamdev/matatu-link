@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Button, Text } from "react-native-paper";
-import { getTableData, getAllReportsData } from "../../../api/reports";
+import { getTableData, getAllReportsData } from "../../../api/pdf_reports";
 import * as Print from "expo-print";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";

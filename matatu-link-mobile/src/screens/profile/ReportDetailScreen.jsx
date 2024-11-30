@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Text, Button, Card, Divider } from "react-native-paper";
-import { getReportById, updateReportStatus } from "../../api/reports";
+import { getReportById, updateReportStatus } from "../../api/pdf_reports";
 import { useAuth } from "../../contexts/AuthContext";
 
 const ReportDetailScreen = ({ route, navigation }) => {
