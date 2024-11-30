@@ -1,8 +1,6 @@
 // models/Matatu.js
-const { DataTypes } = require('sequelize');
+const {DataTypes} = require('sequelize');
 const sequelize = require('../config/database');
-const Operator = require('./Operator');
-const Route = require('./Route');
 
 const Matatu = sequelize.define('Matatu', {
     matatu_id: {
@@ -55,11 +53,6 @@ const Matatu = sequelize.define('Matatu', {
 }, {
     tableName: 'matatus',
     timestamps: false,
-});
-
-Matatu.belongsTo(Operator, {
-    foreignKey: 'operator_id',
-    as: 'operator'
 });
 
 module.exports = Matatu;

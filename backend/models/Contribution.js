@@ -1,10 +1,6 @@
 // models/Contribution.js
 const {DataTypes} = require('sequelize');
 const sequelize = require('../config/database');
-const User = require('./User');
-const Route = require('./Route');
-const Stop = require('./Stop');
-const Matatu = require('./Matatu');
 
 const Contribution = sequelize.define('Contribution', {
     contribution_id: {
@@ -65,7 +61,5 @@ const Contribution = sequelize.define('Contribution', {
     tableName: 'contributions',
     timestamps: false,
 });
-
-Contribution.belongsTo(User, {foreignKey: 'user_id', as: 'contributingUser'});
 
 module.exports = Contribution;

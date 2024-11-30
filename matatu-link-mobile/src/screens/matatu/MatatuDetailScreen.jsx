@@ -93,10 +93,10 @@ const MatatuDetailScreen = ({ route, navigation }) => {
           <Text style={styles.detailText}>Make: {matatu?.make || "N/A"}</Text>
           <Text style={styles.detailText}>Year: {matatu?.year || "N/A"}</Text>
           <Text style={styles.detailText}>
-            Route: {matatu?.route?.route_name || "Not Assigned"}
+            Route: {matatu?.assignedRoute?.route_name || "Not Assigned"}
           </Text>
           <Text style={styles.detailText}>
-            Operator: {matatu?.operator?.name || "Not Assigned"}
+            Operator: {matatu?.matatu_operator?.name || "Not Assigned"}
           </Text>
           <Text style={styles.detailText}>
             Status: {matatu?.current_status || "Unknown"}

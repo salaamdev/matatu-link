@@ -1,16 +1,12 @@
 // models/Report.js
 const {DataTypes} = require('sequelize');
 const sequelize = require('../config/database');
-const User = require('./User');
-const Matatu = require('./Matatu');
-const Route = require('./Route');
 
 const Report = sequelize.define('Report', {
     report_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-        field: 'report_id'
     },
     user_id: {
         type: DataTypes.INTEGER,
@@ -56,10 +52,5 @@ const Report = sequelize.define('Report', {
     tableName: 'reports',
     timestamps: false
 });
-
-// Add associations
-Report.belongsTo(User, {foreignKey: 'user_id', as: 'user'});
-Report.belongsTo(Matatu, {foreignKey: 'matatu_id', as: 'matatu'});
-Report.belongsTo(Route, {foreignKey: 'route_id', as: 'route'});
 
 module.exports = Report;

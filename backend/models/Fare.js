@@ -61,8 +61,12 @@ const Fare = sequelize.define('Fare', {
     timestamps: false,
 });
 
-Fare.belongsTo(User, {foreignKey: 'user_id', as: 'user'});
-Fare.belongsTo(Matatu, {foreignKey: 'matatu_id', as: 'matatu'});
-Fare.belongsTo(Route, {foreignKey: 'route_id', as: 'route'});
+// Fare.belongsTo(User, {foreignKey: 'user_id', as: 'user'});
+// Fare.belongsTo(Matatu, {foreignKey: 'matatu_id', as: 'matatu'});
+// // [backend/models/Fare.js](backend/models/Fare.js)
+// Fare.belongsTo(Route, {
+//     foreignKey: 'route_id',
+//     as: 'fareRoute', // Changed alias to 'fareRoute'
+// });
 
 module.exports = Fare;

@@ -1,3 +1,4 @@
+// models/index.js
 const Matatu = require('./Matatu');
 const Route = require('./Route');
 const Stop = require('./Stop');
@@ -12,10 +13,10 @@ const Notification = require('./Notification');
 const Fare = require('./Fare');
 const Payment = require('./Payment');
 
-// Matatu and Route associations
+// Matatu and Route Associations
 Matatu.belongsTo(Route, {
     foreignKey: 'route_id',
-    as: 'assignedRoute',
+    as: 'matatuRoute', // Unique alias
 });
 
 Route.hasMany(Matatu, {
@@ -23,7 +24,7 @@ Route.hasMany(Matatu, {
     as: 'routeMatatus',
 });
 
-// Define many-to-many between Route and Stop
+// Route and Stop (Many-to-Many) Associations
 Route.belongsToMany(Stop, {
     through: 'RouteStops',
     foreignKey: 'route_id',
@@ -38,7 +39,7 @@ Stop.belongsToMany(Route, {
     as: 'stopRoutes',
 });
 
-// User and UserRole associations
+// User and UserRole Associations
 User.belongsTo(UserRole, {
     foreignKey: 'role_id',
     as: 'userRole',
@@ -49,7 +50,7 @@ UserRole.hasMany(User, {
     as: 'roleUsers',
 });
 
-// Matatu and MatatuLocation associations
+// Matatu and MatatuLocation Associations
 Matatu.hasMany(MatatuLocation, {
     foreignKey: 'matatu_id',
     as: 'matatuLocations',
@@ -60,17 +61,17 @@ MatatuLocation.belongsTo(Matatu, {
     as: 'locationMatatu',
 });
 
-// Contribution and User associations
+// Contribution and User Associations
 Contribution.belongsTo(User, {
     foreignKey: 'user_id',
-    as: 'contributorUser',
+    as: 'contributorUser', // Unique alias
 });
 User.hasMany(Contribution, {
     foreignKey: 'user_id',
     as: 'userContributions',
 });
 
-// Vote and Contribution associations
+// Vote and Contribution Associations
 Vote.belongsTo(Contribution, {
     foreignKey: 'contribution_id',
     as: 'voteContribution',
@@ -80,7 +81,7 @@ Contribution.hasMany(Vote, {
     as: 'contributionVotes',
 });
 
-// Vote and User associations
+// Vote and User Associations
 Vote.belongsTo(User, {
     foreignKey: 'user_id',
     as: 'votingUser',
@@ -90,7 +91,7 @@ User.hasMany(Vote, {
     as: 'userVotes',
 });
 
-// Report associations
+// Report Associations
 Report.belongsTo(User, {
     foreignKey: 'user_id',
     as: 'reportUser',
@@ -108,7 +109,7 @@ User.hasMany(Report, {
     as: 'userReports',
 });
 
-// Notification associations
+// Notification Associations
 Notification.belongsTo(User, {
     foreignKey: 'user_id',
     as: 'notificationUser',
@@ -118,7 +119,7 @@ User.hasMany(Notification, {
     as: 'userNotifications',
 });
 
-// Fares and Payments associations
+// Fare and User Associations
 Fare.belongsTo(User, {
     foreignKey: 'user_id',
     as: 'fareUser',
@@ -128,6 +129,7 @@ User.hasMany(Fare, {
     as: 'userFares',
 });
 
+// Fare and Matatu Associations
 Fare.belongsTo(Matatu, {
     foreignKey: 'matatu_id',
     as: 'fareMatatu',
@@ -137,6 +139,7 @@ Matatu.hasMany(Fare, {
     as: 'matatuFares',
 });
 
+// Fare and Route Associations
 Fare.belongsTo(Route, {
     foreignKey: 'route_id',
     as: 'fareRoute',
@@ -146,6 +149,7 @@ Route.hasMany(Fare, {
     as: 'routeFares',
 });
 
+// Payment and Fare Associations
 Payment.belongsTo(Fare, {
     foreignKey: 'fare_id',
     as: 'paymentFare',
@@ -155,6 +159,7 @@ Fare.hasMany(Payment, {
     as: 'farePayments',
 });
 
+// Matatu and Operator Associations
 Matatu.belongsTo(Operator, {
     foreignKey: 'operator_id',
     as: 'matatu_operator',
@@ -171,8 +176,8 @@ module.exports = {
     Stop,
     Operator,
     UserRole,
-    MatatuLocation,
     User,
+    MatatuLocation,
     Contribution,
     Vote,
     Report,

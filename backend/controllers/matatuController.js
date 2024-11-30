@@ -7,8 +7,8 @@ exports.getAllMatatus = async (req, res) => {
             include: [
                 {
                     model: Route,
-                    as: 'assignedRoute',
-                    attributes: ['route_id', 'route_name', 'description']
+                    as: 'matatuRoute', // Updated alias
+                    attributes: ['route_id', 'route_name', 'description'],
                 },
                 {
                     model: Operator,
@@ -31,7 +31,20 @@ exports.getMatatuById = async (req, res) => {
     }
 
     try {
-        const matatu = await Matatu.findByPk(id);
+        const matatu = await Matatu.findByPk(id, {
+            include: [
+                {
+                    model: Route,
+                    as: 'assignedRoute',
+                    attributes: ['route_id', 'route_name', 'description']
+                },
+                {
+                    model: Operator,
+                    as: 'matatu_operator',
+                    attributes: ['operator_id', 'name', 'contact_info']
+                }
+            ]
+        });
         if (matatu) {
             res.status(200).json(matatu);
         } else {

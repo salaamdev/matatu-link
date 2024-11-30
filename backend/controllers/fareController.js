@@ -54,7 +54,7 @@ exports.getUserFares = async (req, res) => {
             where: {user_id},
             include: [
                 {model: Matatu, as: 'matatu', attributes: ['matatu_id', 'registration_number']},
-                {model: Route, as: 'route', attributes: ['route_id', 'route_name']},
+                {model: Route, as: 'fareRoute', attributes: ['route_id', 'route_name']},
                 {model: Payment, as: 'payments'},
             ],
             order: [['date_paid', 'DESC']],
