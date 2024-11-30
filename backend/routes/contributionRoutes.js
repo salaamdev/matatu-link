@@ -12,11 +12,16 @@ router.use(authMiddleware);
 
 // POST /api/contributions - Create a new contribution
 router.post('/', [
-    body('contribution_type').isIn(['route', 'stop', 'matatu']).withMessage('Invalid contribution type'),
-    body('content').notEmpty().withMessage('Content is required'),
-    body('route_id').optional().isInt().withMessage('route_id must be an integer'),
-    body('stop_id').optional().isInt().withMessage('stop_id must be an integer'),
-    body('matatu_id').optional().isInt().withMessage('matatu_id must be an integer'),
+    body('contribution_type')
+        .isIn(['route', 'stop', 'matatu'])
+        .withMessage('Invalid contribution type'),
+    body('content')
+        .notEmpty()
+        .withMessage('Content is required'),
+    // Make foreign key fields optional
+    body('route_id').optional().isInt(),
+    body('stop_id').optional().isInt(),
+    body('matatu_id').optional().isInt()
 ], contributionController.createContribution);
 
 // GET /api/contributions - Retrieve all contributions

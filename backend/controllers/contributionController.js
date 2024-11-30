@@ -2,48 +2,37 @@
 const {Contribution, Vote, Route, Stop, Matatu, User} = require('../models');
 const {validationResult} = require('express-validator');
 
-// Create a new contribution
+// controllers/contributionController.js
 exports.createContribution = async (req, res) => {
-    // Validate request
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({errors: errors.array()});
     }
 
-    const {contribution_type, content, route_id, stop_id, matatu_id} = req.body;
+    const {contribution_type, content} = req.body;
     const user_id = req.user.userId;
 
     try {
-        // Validate foreign keys based on contribution_type
-        if (contribution_type === 'route' && route_id) {
-            const route = await Route.findByPk(route_id);
-            if (!route) {
-                return res.status(400).json({error: 'Invalid route_id'});
-            }
-        }
-        if (contribution_type === 'stop' && stop_id) {
-            const stop = await Stop.findByPk(stop_id);
-            if (!stop) {
-                return res.status(400).json({error: 'Invalid stop_id'});
-            }
-        }
-        if (contribution_type === 'matatu' && matatu_id) {
-            const matatu = await Matatu.findByPk(matatu_id);
-            if (!matatu) {
-                return res.status(400).json({error: 'Invalid matatu_id'});
-            }
-        }
-
+        // Create contribution with basic required fields first
         const newContribution = await Contribution.create({
             user_id,
             contribution_type,
             content,
-            route_id: contribution_type === 'route' ? route_id : null,
-            stop_id: contribution_type === 'stop' ? stop_id : null,
-            matatu_id: contribution_type === 'matatu' ? matatu_id : null,
+            // Only set related IDs if they are provided and valid
+            route_id: req.body.route_id || null,
+            stop_id: req.body.stop_id || null,
+            matatu_id: req.body.matatu_id || null
         });
 
-        res.status(201).json(newContribution);
+        // Return contribution with associations
+        const contribution = await Contribution.findByPk(newContribution.contribution_id, {
+            include: [
+                {model: User, as: 'user', attributes: ['user_id', 'username']},
+                {model: Vote, as: 'votes'}
+            ]
+        });
+
+        res.status(201).json(contribution);
     } catch (error) {
         console.error('Error creating contribution:', error);
         res.status(500).json({error: 'Failed to create contribution'});
@@ -51,19 +40,33 @@ exports.createContribution = async (req, res) => {
 };
 
 // Get all contributions
+// backend/controllers/contributionController.js
+
 exports.getAllContributions = async (req, res) => {
     try {
         const contributions = await Contribution.findAll({
             include: [
-                {model: User, as: 'contributingUser', attributes: ['user_id', 'username', 'email']},
-                {model: Vote, as: 'votes', include: [{model: User, as: 'votingUser', attributes: ['user_id', 'username']}]},
+                {
+                    model: User,
+                    as: 'contributingUser',
+                    attributes: ['user_id', 'username', 'email']
+                },
+                {
+                    model: Vote,
+                    as: 'contributionVotes', // Changed from 'votes' to 'contributionVotes'
+                    include: [{
+                        model: User,
+                        as: 'votingUser',
+                        attributes: ['user_id', 'username']
+                    }]
+                }
             ],
-            order: [['date_submitted', 'DESC']],
+            order: [['date_submitted', 'DESC']]
         });
-        res.status(200).json(contributions);
+        return res.status(200).json(contributions);
     } catch (error) {
-        console.error('Error fetching contributions:', error);
-        res.status(500).json({error: 'Failed to fetch contributions'});
+        console.error('Error in getAllContributions:', error);
+        return res.status(500).json({error: error.message || 'Failed to fetch contributions'});
     }
 };
 
@@ -79,7 +82,7 @@ exports.getContributionById = async (req, res) => {
         const contribution = await Contribution.findByPk(id, {
             include: [
                 {model: User, as: 'contributingUser', attributes: ['user_id', 'username', 'email']},
-                {model: Vote, as: 'votes', include: [{model: User, as: 'votingUser', attributes: ['user_id', 'username']}]},
+                {model: Vote, as: 'contributionVotes', include: [{model: User, as: 'votingUser', attributes: ['user_id', 'username']}]},
             ],
         });
 

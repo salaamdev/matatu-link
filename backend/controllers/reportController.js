@@ -1,7 +1,36 @@
 // controllers/reportController.js
-const {Report} = require('../models');
 const {validationResult} = require('express-validator');
+// backend/controllers/reportController.js
+const {Report, User, Matatu, Route} = require('../models');
 
+exports.getAllReports = async (req, res) => {
+    try {
+        const reports = await Report.findAll({
+            include: [
+                {
+                    model: User,
+                    as: 'reportUser',
+                    attributes: ['user_id', 'username', 'email']
+                },
+                {
+                    model: Matatu,
+                    as: 'reportMatatu',
+                    attributes: ['matatu_id', 'registration_number']
+                },
+                {
+                    model: Route,
+                    as: 'reportRoute',
+                    attributes: ['route_id', 'route_name']
+                }
+            ],
+            order: [['date_reported', 'DESC']]
+        });
+        return res.status(200).json(reports);
+    } catch (error) {
+        console.error('Error in getAllReports:', error);
+        return res.status(500).json({error: error.message || 'Failed to fetch reports'});
+    }
+};
 // Submit a new report
 exports.submitReport = async (req, res) => {
     // Validate request
@@ -30,20 +59,33 @@ exports.submitReport = async (req, res) => {
 };
 
 // Get all reports (admin only)
+// backend/controllers/reportController.js
 exports.getAllReports = async (req, res) => {
     try {
         const reports = await Report.findAll({
             include: [
-                {model: User, as: 'user', attributes: ['user_id', 'username', 'email']},
-                {model: Matatu, as: 'matatu', attributes: ['matatu_id', 'registration_number']},
-                {model: Route, as: 'route', attributes: ['route_id', 'route_name']},
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: ['user_id', 'username', 'email']
+                },
+                {
+                    model: Matatu,
+                    as: 'matatu',
+                    attributes: ['matatu_id', 'registration_number']
+                },
+                {
+                    model: Route,
+                    as: 'route',
+                    attributes: ['route_id', 'route_name']
+                }
             ],
-            order: [['date_reported', 'DESC']],
+            order: [['date_reported', 'DESC']]
         });
-        res.status(200).json(reports);
+        return res.status(200).json(reports);
     } catch (error) {
-        console.error('Error fetching reports:', error);
-        res.status(500).json({error: 'Failed to fetch reports'});
+        console.error('Error in getAllReports:', error);
+        return res.status(500).json({error: error.message || 'Failed to fetch reports'});
     }
 };
 

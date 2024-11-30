@@ -1,13 +1,10 @@
-// src/navigation/TabNavigator.jsx
-
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../screens/home/HomeScreen";
+import HomeStackNavigator from "./HomeStackNavigator";
 import MatatusStackNavigator from "./MatatusStackNavigator";
-import RoutesStackNavigator from "./RoutesStackNavigator"; // Import RoutesStackNavigator
-import PaymentScreen from "../screens/payment/PaymentScreen";
-import ReportsScreen from "../screens/reports/ReportsScreen";
-import ProfileScreen from "../screens/profiles/ProfileScreen";
+import RoutesStackNavigator from "./RoutesStackNavigator";
+import ProfileStackNavigator from "./ProfileStackNavigator";
+import CommunityStackNavigator from "./CommunityStackNavigator";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
@@ -17,10 +14,9 @@ export default function TabNavigator() {
     <Tab.Navigator
       initialRouteName="Home"
       screenOptions={({ route }) => ({
-        headerShown: false, // Hide header for all tabs
+        headerShown: false,
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-
           switch (route.name) {
             case "Home":
               iconName = focused ? "home" : "home-outline";
@@ -29,20 +25,13 @@ export default function TabNavigator() {
               iconName = focused ? "bus" : "bus-outline";
               return <Ionicons name={iconName} size={size} color={color} />;
             case "Routes":
-              iconName = focused ? "route" : "route";
+              iconName = "route";
               return (
                 <MaterialIcons name={iconName} size={size} color={color} />
               );
-            case "Payment":
-              iconName = focused ? "payment" : "payment";
-              return (
-                <MaterialIcons name={iconName} size={size} color={color} />
-              );
-            case "Reports":
-              iconName = focused ? "report" : "report-gmailerrorred";
-              return (
-                <MaterialIcons name={iconName} size={size} color={color} />
-              );
+            case "Community":
+              iconName = focused ? "people" : "people-outline";
+              return <Ionicons name={iconName} size={size} color={color} />;
             case "Profile":
               iconName = focused ? "person" : "person-outline";
               return <Ionicons name={iconName} size={size} color={color} />;
@@ -63,12 +52,11 @@ export default function TabNavigator() {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={HomeStackNavigator} />
       <Tab.Screen name="Matatus" component={MatatusStackNavigator} />
       <Tab.Screen name="Routes" component={RoutesStackNavigator} />
-      <Tab.Screen name="Payment" component={PaymentScreen} />
-      <Tab.Screen name="Reports" component={ReportsScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Community" component={CommunityStackNavigator} />
+      <Tab.Screen name="Profile" component={ProfileStackNavigator} />
     </Tab.Navigator>
   );
 }

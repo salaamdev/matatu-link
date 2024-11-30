@@ -66,6 +66,6 @@ const Contribution = sequelize.define('Contribution', {
     timestamps: false,
 });
 
-Contribution.belongsTo(User, {foreignKey: 'user_id', as: 'user'});
+Contribution.belongsTo(User, {foreignKey: 'user_id', as: 'contributingUser'});
 
 module.exports = Contribution;

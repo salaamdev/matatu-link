@@ -15,11 +15,13 @@ export const AuthProvider = ({ children }) => {
       try {
         await initializeAxios();
         const response = await api.get("/auth/profile");
-        setUser(response.data); // Assuming the profile endpoint returns user data including role
+        setUser(response.data);
       } catch (error) {
         console.log("Auth initialization error:", error.message);
-        // Token might be invalid or expired; ensure it's removed
+        // Clear any stored token
         await setAuthToken(null);
+        // Ensure user is set to null to show login screen
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -78,7 +80,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider
+      value={{ user, setUser, loading, login, register, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
