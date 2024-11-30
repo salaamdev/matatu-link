@@ -78,7 +78,8 @@ const ContributionsTab = ({ navigation }) => {
       ]
     );
   };
-
+  // When using the tab, make sure to pass navigation:
+  <ContributionsTab navigation={navigation} />;
   if (loading) {
     return (
       <View style={styles.loaderContainer}>

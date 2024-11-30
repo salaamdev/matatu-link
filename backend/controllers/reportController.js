@@ -3,13 +3,15 @@ const {validationResult} = require('express-validator');
 // backend/controllers/reportController.js
 const {Report, User, Matatu, Route} = require('../models');
 
+// backend/controllers/reportController.js
+// backend/controllers/reportController.js
 exports.getAllReports = async (req, res) => {
     try {
         const reports = await Report.findAll({
             include: [
                 {
                     model: User,
-                    as: 'reportUser',
+                    as: 'reportUser', // Changed from 'user' to match model
                     attributes: ['user_id', 'username', 'email']
                 },
                 {
@@ -66,17 +68,17 @@ exports.getAllReports = async (req, res) => {
             include: [
                 {
                     model: User,
-                    as: 'user',
+                    as: 'reportUser', // Changed from 'user' to match model
                     attributes: ['user_id', 'username', 'email']
                 },
                 {
                     model: Matatu,
-                    as: 'matatu',
+                    as: 'reportMatatu',
                     attributes: ['matatu_id', 'registration_number']
                 },
                 {
                     model: Route,
-                    as: 'route',
+                    as: 'reportRoute',
                     attributes: ['route_id', 'route_name']
                 }
             ],

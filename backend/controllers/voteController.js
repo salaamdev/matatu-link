@@ -1,5 +1,5 @@
 // controllers/voteController.js
-const {Vote, Contribution} = require('../models');
+const {Vote, Contribution, User} = require('../models');
 const {validationResult} = require('express-validator');
 
 // Cast a vote (upvote or downvote) on a contribution
@@ -60,7 +60,7 @@ exports.castVote = async (req, res) => {
 // Get votes for a specific contribution
 exports.getVotesForContribution = async (req, res) => {
     const {contribution_id} = req.params;
-
+    
     if (!contribution_id || isNaN(contribution_id)) {
         return res.status(400).json({error: 'Invalid or missing contribution ID'});
     }
@@ -68,12 +68,24 @@ exports.getVotesForContribution = async (req, res) => {
     try {
         const votes = await Vote.findAll({
             where: {contribution_id},
-            include: [{model: User, as: 'votingUser', attributes: ['user_id', 'username']}],
+            include: [{
+                model: User,
+                as: 'votingUser',
+                attributes: ['user_id', 'username']
+            }]
         });
 
-        res.status(200).json(votes);
+        // Count upvotes and downvotes
+        const upvotes = votes.filter(v => v.vote_type === 'upvote').length;
+        const downvotes = votes.filter(v => v.vote_type === 'downvote').length;
+
+        res.status(200).json({
+            votes,
+            upvotes,
+            downvotes
+        });
     } catch (error) {
-        console.error(`Error fetching votes for contribution ID ${ contribution_id }:`, error);
+        console.error(`Error fetching votes for contribution ID ${contribution_id}:`, error);
         res.status(500).json({error: 'Failed to fetch votes'});
     }
 };

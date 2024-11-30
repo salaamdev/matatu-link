@@ -13,22 +13,24 @@ exports.createContribution = async (req, res) => {
     const user_id = req.user.userId;
 
     try {
-        // Create contribution with basic required fields first
         const newContribution = await Contribution.create({
             user_id,
             contribution_type,
             content,
-            // Only set related IDs if they are provided and valid
-            route_id: req.body.route_id || null,
-            stop_id: req.body.stop_id || null,
-            matatu_id: req.body.matatu_id || null
+            route_id: null,
+            stop_id: null,
+            matatu_id: null,
+            status: 'pending',
+            date_submitted: new Date()
         });
 
-        // Return contribution with associations
         const contribution = await Contribution.findByPk(newContribution.contribution_id, {
             include: [
-                {model: User, as: 'user', attributes: ['user_id', 'username']},
-                {model: Vote, as: 'votes'}
+                {
+                    model: User,
+                    as: 'contributorUser',
+                    attributes: ['user_id', 'username', 'email']
+                }
             ]
         });
 
@@ -48,12 +50,12 @@ exports.getAllContributions = async (req, res) => {
             include: [
                 {
                     model: User,
-                    as: 'contributingUser',
+                    as: 'contributorUser', // Changed from 'contributingUser' to match model
                     attributes: ['user_id', 'username', 'email']
                 },
                 {
                     model: Vote,
-                    as: 'contributionVotes', // Changed from 'votes' to 'contributionVotes'
+                    as: 'contributionVotes',
                     include: [{
                         model: User,
                         as: 'votingUser',
@@ -71,6 +73,8 @@ exports.getAllContributions = async (req, res) => {
 };
 
 // Get a single contribution by ID
+// backend/controllers/contributionController.js
+
 exports.getContributionById = async (req, res) => {
     const {id} = req.params;
 
@@ -81,18 +85,29 @@ exports.getContributionById = async (req, res) => {
     try {
         const contribution = await Contribution.findByPk(id, {
             include: [
-                {model: User, as: 'contributingUser', attributes: ['user_id', 'username', 'email']},
-                {model: Vote, as: 'contributionVotes', include: [{model: User, as: 'votingUser', attributes: ['user_id', 'username']}]},
-            ],
+                {
+                    model: User,
+                    as: 'contributorUser', // Changed from 'contributingUser' to match model
+                    attributes: ['user_id', 'username', 'email']
+                },
+                {
+                    model: Vote,
+                    as: 'contributionVotes',
+                    include: [{
+                        model: User,
+                        as: 'votingUser',
+                        attributes: ['user_id', 'username']
+                    }]
+                }
+            ]
         });
 
         if (!contribution) {
             return res.status(404).json({error: 'Contribution not found'});
         }
-
         res.status(200).json(contribution);
     } catch (error) {
-        console.error(`Error fetching contribution with ID ${ id }:`, error);
+        console.error(`Error fetching contribution with ID ${id}:`, error);
         res.status(500).json({error: 'Failed to fetch contribution'});
     }
 };
