@@ -1,5 +1,4 @@
 // src/screens/routes/RoutesScreen.jsx
-
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -8,10 +7,11 @@ import {
   ActivityIndicator,
   Alert,
   RefreshControl,
-  TouchableOpacity,
+  Animated,
 } from "react-native";
-import { Text, FAB } from "react-native-paper";
+import { Text } from "react-native-paper";
 import RouteItem from "./components/RouteItem";
+import RouteAdminActionButton from "../../components/common/RouteAdminActionButton";
 import { getRoutes, deleteRoute } from "../../api/routes";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -20,6 +20,8 @@ const RoutesScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuth();
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedRouteId, setSelectedRouteId] = useState(null);
 
   useEffect(() => {
     fetchRoutes();
@@ -44,10 +46,21 @@ const RoutesScreen = ({ navigation }) => {
   };
 
   const handleRoutePress = (route) => {
-    navigation.navigate("RouteDetail", { routeId: route.route_id });
+    if (selectionMode) {
+      setSelectedRouteId(
+        selectedRouteId === route.route_id ? null : route.route_id
+      );
+    } else {
+      navigation.navigate("RouteDetail", { routeId: route.route_id });
+    }
   };
 
-  const handleDeleteRoute = (routeId) => {
+  const handleDelete = async () => {
+    if (!selectedRouteId) {
+      Alert.alert("Error", "Please select a route to delete.");
+      return;
+    }
+
     Alert.alert(
       "Confirm Delete",
       "Are you sure you want to delete this route?",
@@ -58,12 +71,14 @@ const RoutesScreen = ({ navigation }) => {
           style: "destructive",
           onPress: async () => {
             try {
-              await deleteRoute(routeId);
-              setRoutes(routes.filter((route) => route.route_id !== routeId));
-              Alert.alert("Success", "Route deleted successfully.");
+              await deleteRoute(selectedRouteId);
+              setRoutes(routes.filter((r) => r.route_id !== selectedRouteId));
+              Alert.alert("Success", "Route deleted successfully");
+              setSelectionMode(false);
+              setSelectedRouteId(null);
             } catch (error) {
               console.error("Error deleting route:", error.message);
-              Alert.alert("Error", "Failed to delete route.");
+              Alert.alert("Error", "Failed to delete route");
             }
           },
         },
@@ -71,8 +86,31 @@ const RoutesScreen = ({ navigation }) => {
     );
   };
 
+  const handleEdit = () => {
+    if (!selectedRouteId) {
+      Alert.alert("Error", "Please select a route to edit.");
+      return;
+    }
+    const selectedRoute = routes.find((r) => r.route_id === selectedRouteId);
+    navigation.navigate("AddEditRoute", {
+      isEdit: true,
+      routeData: selectedRoute,
+    });
+    setSelectionMode(false);
+    setSelectedRouteId(null);
+  };
+
+  const handleAdd = () => {
+    navigation.navigate("AddEditRoute", { isEdit: false });
+  };
+
   const renderRouteItem = ({ item }) => (
-    <RouteItem route={item} onPress={handleRoutePress} />
+    <RouteItem
+      route={item}
+      onPress={handleRoutePress}
+      selectionMode={selectionMode}
+      selected={item.route_id === selectedRouteId}
+    />
   );
 
   if (loading) {
@@ -85,35 +123,34 @@ const RoutesScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {routes.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No Routes Available.</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={routes}
-          keyExtractor={(item) => item.route_id.toString()}
-          renderItem={renderRouteItem}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={["#007AFF"]}
-            />
-          }
-          contentContainerStyle={
-            routes.length === 0 && styles.flatListContainer
-          }
-        />
-      )}
+      <FlatList
+        data={routes}
+        keyExtractor={(item) => item.route_id.toString()}
+        renderItem={renderRouteItem}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#007AFF"]}
+          />
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No Routes Available.</Text>
+          </View>
+        }
+        contentContainerStyle={routes.length === 0 && styles.flatListContainer}
+      />
 
-      {user?.userRole?.role_name === "admin" && (
-        <FAB
-          style={styles.fab}
-          small
-          icon="plus"
-          onPress={() => navigation.navigate("AddEditRoute", { isEdit: false })}
-          label="Add Route"
+      {user?.roleName === "admin" && (
+        <RouteAdminActionButton
+          onAdd={handleAdd}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          selectionMode={selectionMode}
+          setSelectionMode={setSelectionMode}
+          selectedId={selectedRouteId}
+          setSelectedId={setSelectedRouteId}
         />
       )}
     </View>
@@ -141,13 +178,6 @@ const styles = StyleSheet.create({
   flatListContainer: {
     flexGrow: 1,
     justifyContent: "center",
-  },
-  fab: {
-    position: "absolute",
-    margin: 16,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "#34C759",
   },
 });
 
