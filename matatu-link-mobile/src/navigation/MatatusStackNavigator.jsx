@@ -4,6 +4,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import MatatusScreen from "../screens/matatu/MatatusScreen";
 import MatatuDetailScreen from "../screens/matatu/MatatuDetailScreen";
+import AddEditMatatuScreen from "../screens/matatu/AddEditMatatuScreen";
+
 
 const Stack = createStackNavigator();
 
@@ -19,6 +21,13 @@ const MatatusStackNavigator = () => {
         name="MatatuDetail"
         component={MatatuDetailScreen}
         options={{ title: "Matatu Details" }}
+      />
+      <Stack.Screen
+        name="AddEditMatatu"
+        component={AddEditMatatuScreen}
+        options={({ route }) => ({
+          title: route.params?.isEdit ? "Edit Matatu" : "Add Matatu",
+        })}
       />
     </Stack.Navigator>
   );

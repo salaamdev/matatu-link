@@ -1,5 +1,4 @@
 // src/screens/matatu/MatatusScreen.jsx
-
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -8,15 +7,23 @@ import {
   ActivityIndicator,
   Alert,
   RefreshControl,
+  Animated,
 } from "react-native";
+import { Text, FAB } from "react-native-paper";
 import MatatuItem from "./components/MatatuItem";
+import AdminActionButton from "../../components/common/AdminActionButton";
 import api from "../../api/config";
-import { Text } from "react-native-paper";
+import { useAuth } from "../../contexts/AuthContext";
 
 const MatatusScreen = ({ navigation }) => {
   const [matatus, setMatatus] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const { user } = useAuth();
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedMatatuId, setSelectedMatatuId] = useState(null);
+  const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
+  const fadeAnim = useState(new Animated.Value(0))[0];
 
   useEffect(() => {
     fetchMatatus();
@@ -41,7 +48,84 @@ const MatatusScreen = ({ navigation }) => {
   };
 
   const handleMatatuPress = (matatu) => {
-    navigation.navigate("MatatuDetail", { matatuId: matatu.matatu_id });
+    if (selectionMode) {
+      setSelectedMatatuId(
+        selectedMatatuId === matatu.matatu_id ? null : matatu.matatu_id
+      );
+    } else {
+      navigation.navigate("MatatuDetail", { matatuId: matatu.matatu_id });
+    }
+  };
+
+  const handleDelete = () => {
+    if (!selectedMatatuId) {
+      Alert.alert("Error", "Please select a matatu to delete.");
+      return;
+    }
+
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this matatu?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await api.delete(`/matatus/${selectedMatatuId}`);
+              setMatatus(
+                matatus.filter((m) => m.matatu_id !== selectedMatatuId)
+              );
+              Alert.alert("Success", "Matatu deleted successfully");
+              setSelectionMode(false);
+              setSelectedMatatuId(null);
+            } catch (error) {
+              console.error("Error deleting matatu:", error.message);
+              Alert.alert("Error", "Failed to delete matatu");
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleEdit = () => {
+    if (!selectedMatatuId) {
+      Alert.alert("Error", "Please select a matatu to edit.");
+      return;
+    }
+
+    const selectedMatatu = matatus.find(
+      (m) => m.matatu_id === selectedMatatuId
+    );
+    navigation.navigate("AddEditMatatu", {
+      matatu: selectedMatatu,
+      isEdit: true,
+    });
+    setSelectionMode(false);
+    setSelectedMatatuId(null);
+  };
+
+  const handleAdd = () => {
+    navigation.navigate("AddEditMatatu", { isEdit: false });
+  };
+
+  const toggleAdminMenu = () => {
+    if (isAdminMenuOpen) {
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+    setIsAdminMenuOpen(!isAdminMenuOpen);
   };
 
   if (loading) {
@@ -58,7 +142,12 @@ const MatatusScreen = ({ navigation }) => {
         data={matatus}
         keyExtractor={(item) => item.matatu_id.toString()}
         renderItem={({ item }) => (
-          <MatatuItem matatu={item} onPress={handleMatatuPress} />
+          <MatatuItem
+            matatu={item}
+            onPress={handleMatatuPress}
+            selectionMode={selectionMode}
+            selected={item.matatu_id === selectedMatatuId}
+          />
         )}
         refreshControl={
           <RefreshControl
@@ -74,6 +163,79 @@ const MatatusScreen = ({ navigation }) => {
         }
         contentContainerStyle={matatus.length === 0 && styles.flatListContainer}
       />
+
+      {user?.roleName === "admin" && (
+        <View style={styles.fabContainer}>
+          {selectionMode ? (
+            <>
+              <FAB
+                style={[styles.fab, styles.fabCancel]}
+                icon="close"
+                onPress={() => {
+                  setSelectionMode(false);
+                  setSelectedMatatuId(null);
+                  setIsAdminMenuOpen(false);
+                }}
+                label="Cancel"
+              />
+              <FAB
+                style={[styles.fab, styles.fabDelete]}
+                icon="delete"
+                onPress={handleDelete}
+                label="Delete"
+              />
+              <FAB
+                style={[styles.fab, styles.fabEdit]}
+                icon="pencil"
+                onPress={handleEdit}
+                label="Edit"
+              />
+            </>
+          ) : (
+            <>
+              <AdminActionButton
+                onAdd={handleAdd}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                selectionMode={selectionMode}
+                setSelectionMode={setSelectionMode}
+                selectedId={selectedMatatuId}
+                setSelectedId={setSelectedMatatuId}
+              />
+              <Animated.View
+                style={[
+                  styles.adminMenuContainer,
+                  {
+                    opacity: fadeAnim,
+                    transform: [
+                      {
+                        translateX: fadeAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [100, 0],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+                pointerEvents={isAdminMenuOpen ? "auto" : "none"}
+              >
+                <FAB
+                  style={[styles.fab, styles.fabAdd]}
+                  icon="plus"
+                  onPress={handleAdd}
+                  label="Add"
+                />
+                <FAB
+                  style={[styles.fab, styles.fabEdit]}
+                  icon="pencil"
+                  onPress={() => setSelectionMode(true)}
+                  label="Select"
+                />
+              </Animated.View>
+            </>
+          )}
+        </View>
+      )}
     </View>
   );
 };
@@ -99,6 +261,33 @@ const styles = StyleSheet.create({
   flatListContainer: {
     flexGrow: 1,
     justifyContent: "center",
+  },
+  fabContainer: {
+    position: "absolute",
+    right: 16,
+    bottom: 16,
+    flexDirection: "row",
+  },
+  adminMenuContainer: {
+    flexDirection: "row",
+    position: "absolute",
+    right: 70,
+    bottom: 0,
+  },
+  fab: {
+    margin: 8,
+  },
+  fabAdd: {
+    backgroundColor: "#34C759",
+  },
+  fabEdit: {
+    backgroundColor: "#007AFF",
+  },
+  fabDelete: {
+    backgroundColor: "#FF3B30",
+  },
+  fabCancel: {
+    backgroundColor: "#FF9500",
   },
 });
 

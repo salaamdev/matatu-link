@@ -9,18 +9,20 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import { Card } from "react-native-paper";
+import { Card, Button } from "react-native-paper";
 import MapView, { Marker } from "react-native-maps";
-import api from "../../api/config";
 import { Ionicons } from "@expo/vector-icons";
 import io from "socket.io-client";
+import api from "../../api/config";
+import { useAuth } from "../../contexts/AuthContext";
 
-const SOCKET_SERVER_URL = "http://192.168.40.219:5000"; // Replace with your backend Socket.io URL
+const SOCKET_SERVER_URL = "http://192.168.0.198:5000"; // Replace with your backend Socket.io URL
 
-const MatatuDetailScreen = ({route, navigation}) => {
-  const {matatuId} = route.params;
+const MatatuDetailScreen = ({ route, navigation }) => {
+  const { matatuId } = route.params;
   const [matatu, setMatatu] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth(); // Accessing user from AuthContext
 
   useEffect(() => {
     fetchMatatuDetails();
@@ -60,7 +62,7 @@ const MatatuDetailScreen = ({route, navigation}) => {
 
   const fetchMatatuDetails = async () => {
     try {
-      const response = await api.get(`/matatus/${ matatuId }`);
+      const response = await api.get(`/matatus/${matatuId}`);
       setMatatu(response.data);
     } catch (error) {
       console.error("Error fetching matatu details:", error.message);
@@ -69,6 +71,39 @@ const MatatuDetailScreen = ({route, navigation}) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handler function to delete a matatu
+  const handleDelete = () => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this matatu?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await api.delete(`/matatus/${matatuId}`);
+              Alert.alert("Success", "Matatu deleted successfully");
+              navigation.goBack();
+            } catch (error) {
+              console.error("Error deleting matatu:", error.message);
+              Alert.alert("Error", "Failed to delete matatu");
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  // Handler function to edit a matatu
+  const handleEdit = () => {
+    navigation.navigate("AddEditMatatu", {
+      matatu,
+      isEdit: true,
+    });
   };
 
   if (loading || !matatu) {
@@ -98,6 +133,7 @@ const MatatuDetailScreen = ({route, navigation}) => {
           </Text>
         </Card.Content>
       </Card>
+
       {/* Route Information Card */}
       <Card style={[styles.card, styles.cardSpacing]}>
         <Card.Title
@@ -120,7 +156,7 @@ const MatatuDetailScreen = ({route, navigation}) => {
           </Text>
         </Card.Content>
       </Card>
-      // matatu-link-mobile/src/screens/matatu/MatatuDetailScreen.jsx
+
       {/* Operator Information Card */}
       <Card style={[styles.card, styles.cardSpacing]}>
         <Card.Title
@@ -139,6 +175,7 @@ const MatatuDetailScreen = ({route, navigation}) => {
           </Text>
         </Card.Content>
       </Card>
+
       {/* Location Information Card */}
       {matatu?.location && (
         <Card style={[styles.card, styles.cardSpacing]}>
@@ -172,6 +209,29 @@ const MatatuDetailScreen = ({route, navigation}) => {
             </MapView>
           </View>
         </Card>
+      )}
+
+      {/* Admin Actions: Edit and Delete Buttons */}
+      {user?.userRole?.role_name === "admin" && (
+        <View style={styles.adminActions}>
+          <Button
+            mode="contained"
+            icon="pencil"
+            onPress={handleEdit}
+            style={styles.button}
+          >
+            Edit Matatu
+          </Button>
+          <Button
+            mode="contained"
+            icon="delete"
+            onPress={handleDelete}
+            style={[styles.button, styles.deleteButton]}
+            color="#FF3B30"
+          >
+            Delete Matatu
+          </Button>
+        </View>
       )}
     </ScrollView>
   );
@@ -209,6 +269,18 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
+  },
+  // Styles for Admin Actions
+  adminActions: {
+    marginTop: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  button: {
+    marginBottom: 10,
+  },
+  deleteButton: {
+    backgroundColor: "#FF3B30",
   },
 });
 

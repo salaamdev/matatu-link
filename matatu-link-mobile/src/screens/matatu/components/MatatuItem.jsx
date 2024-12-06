@@ -1,11 +1,10 @@
 // src/screens/matatu/components/MatatuItem.jsx
-
 import React from "react";
 import { TouchableOpacity, StyleSheet } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { Card, Text, Checkbox } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 
-const MatatuItem = ({ matatu, onPress }) => {
+const MatatuItem = ({ matatu, onPress, selectionMode, selected }) => {
   return (
     <TouchableOpacity onPress={() => onPress(matatu)}>
       <Card style={styles.card}>
@@ -15,6 +14,14 @@ const MatatuItem = ({ matatu, onPress }) => {
             matatu.capacity || "N/A"
           }`}
           left={(props) => <Ionicons name="bus" size={24} color="#007AFF" />}
+          right={(props) =>
+            selectionMode ? (
+              <Checkbox.Android
+                status={selected ? "checked" : "unchecked"}
+                onPress={() => onPress(matatu)}
+              />
+            ) : null
+          }
         />
         <Card.Content>
           <Text style={styles.detailText}>
