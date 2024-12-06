@@ -237,51 +237,57 @@ const MatatuDetailScreen = ({ route, navigation }) => {
   );
 };
 
+// src/screens/matatu/MatatuDetailScreen.jsx
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-    backgroundColor: "#ffffff",
-    paddingBottom: 20,
+    padding: 15,
+    backgroundColor: "#FFFFFF",
   },
   loaderContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#FFFFFF",
   },
   card: {
+    marginBottom: 15,
     borderRadius: 10,
     elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   cardSpacing: {
-    marginTop: 15,
+    marginTop: 10,
   },
   detailText: {
-    fontSize: 14,
-    marginVertical: 4,
+    fontSize: 16,
+    marginBottom: 5,
     color: "#333333",
   },
   mapContainer: {
-    height: 300,
-    marginTop: 10,
+    height: 200,
     borderRadius: 10,
     overflow: "hidden",
-    elevation: 3,
+    marginTop: 10,
   },
   map: {
     ...StyleSheet.absoluteFillObject,
   },
-  // Styles for Admin Actions
   adminActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 20,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
   },
   button: {
-    marginBottom: 10,
+    flex: 1,
+    marginHorizontal: 5,
   },
   deleteButton: {
     backgroundColor: "#FF3B30",
   },
 });
+
 
 export default MatatuDetailScreen;

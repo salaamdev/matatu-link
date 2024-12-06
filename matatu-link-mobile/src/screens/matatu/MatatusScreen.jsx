@@ -240,23 +240,30 @@ const MatatusScreen = ({ navigation }) => {
   );
 };
 
+// src/screens/matatu/MatatusScreen.jsx
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#F5F5F5",
+    paddingHorizontal: 10,
+    paddingTop: 10,
   },
   loaderContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#F5F5F5",
   },
   emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    marginTop: 50,
+    paddingVertical: 50,
   },
   emptyText: {
     fontSize: 18,
-    color: "#666666",
+    color: "#A9A9A9",
+    textAlign: "center",
   },
   flatListContainer: {
     flexGrow: 1,
@@ -264,31 +271,31 @@ const styles = StyleSheet.create({
   },
   fabContainer: {
     position: "absolute",
-    right: 16,
-    bottom: 16,
-    flexDirection: "row",
-  },
-  adminMenuContainer: {
-    flexDirection: "row",
-    position: "absolute",
-    right: 70,
-    bottom: 0,
+    bottom: 20,
+    right: 20,
+    flexDirection: "column",
+    alignItems: "flex-end",
   },
   fab: {
-    margin: 8,
+    marginBottom: 10,
   },
   fabAdd: {
     backgroundColor: "#34C759",
   },
   fabEdit: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#FF9500",
   },
   fabDelete: {
     backgroundColor: "#FF3B30",
   },
   fabCancel: {
-    backgroundColor: "#FF9500",
+    backgroundColor: "#8E8E93",
+  },
+  adminMenuContainer: {
+    marginBottom: 70,
+    alignItems: "flex-end",
   },
 });
+
 
 export default MatatusScreen;
