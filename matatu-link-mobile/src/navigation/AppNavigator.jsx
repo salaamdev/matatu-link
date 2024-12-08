@@ -11,6 +11,9 @@ import ReportIssueScreen from '../screens/ReportIssueScreen'; // Placeholder
 import ProfileScreen from '../screens/ProfileScreen'; // Placeholder
 import { AuthProvider } from '../contexts/AuthContext';
 import RootNavigator from './RootNavigator';
+import { createStackNavigator } from "@react-navigation/stack";
+import CommunityScreen from "../screens/community/CommunityScreen";
+import ContributionDetailScreen from "../screens/community/ContributionDetailScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -50,7 +53,16 @@ function MainStackNavigator() {
         component={ProfileScreen}
         options={{ title: "Profile" }}
       />
-
+      <Stack.Screen
+        name="Community"
+        component={CommunityScreen}
+        options={{ headerTitle: "Community" }}
+      />
+      <Stack.Screen
+        name="ContributionDetail"
+        component={ContributionDetailScreen}
+        options={{ headerTitle: "Contribution Details" }}
+      />
       {/* Add other screens as needed */}
     </Stack.Navigator>
   );

@@ -24,5 +24,11 @@ router.get('/', rbacMiddleware([1]), reportController.getAllReports);
 router.put('/:id/status', [
     body('status').isIn(['pending', 'reviewed', 'resolved']).withMessage('Invalid status value'),
 ], rbacMiddleware([1]), reportController.updateReportStatus);
+router.get('/:id', reportController.getReportById);
+
+// Your existing routes...
+router.get('/', reportController.getAllReports);
+router.post('/', reportController.submitReport);
+router.put('/:id/status', reportController.updateReportStatus);
 
 module.exports = router;

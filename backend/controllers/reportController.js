@@ -116,3 +116,40 @@ exports.updateReportStatus = async (req, res) => {
         res.status(500).json({error: 'Failed to update report status'});
     }
 };
+
+// backend/controllers/reportController.js
+
+exports.getReportById = async (req, res) => {
+    const { id } = req.params;
+    
+    try {
+        const report = await Report.findByPk(id, {
+            include: [
+                {
+                    model: User,
+                    as: 'reportUser',
+                    attributes: ['user_id', 'username', 'email']
+                },
+                {
+                    model: Matatu,
+                    as: 'reportMatatu',
+                    attributes: ['matatu_id', 'registration_number']
+                },
+                {
+                    model: Route,
+                    as: 'reportRoute',
+                    attributes: ['route_id', 'route_name']
+                }
+            ]
+        });
+
+        if (!report) {
+            return res.status(404).json({ error: 'Report not found' });
+        }
+
+        res.status(200).json(report);
+    } catch (error) {
+        console.error('Error fetching report:', error);
+        res.status(500).json({ error: 'Failed to fetch report details' });
+    }
+};

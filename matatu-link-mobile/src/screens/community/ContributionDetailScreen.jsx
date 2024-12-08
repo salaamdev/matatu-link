@@ -1,4 +1,4 @@
-// src/screens/community/ContributionDetailScreen.jsx
+// [matatu-link-mobile/src/screens/community/ContributionDetailScreen.jsx](matatu-link-mobile/src/screens/community/ContributionDetailScreen.jsx)
 
 import React, { useEffect, useState } from "react";
 import {
@@ -8,38 +8,26 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import { TextInput, Button, Text, Switch } from "react-native-paper";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import {
-  getContributionById,
-  createContribution,
-  updateContribution,
-} from "../../api/contributions";
+import { Text, Card, Button } from "react-native-paper";
+import { getContributionById } from "../../api/contributions";
 import { useAuth } from "../../contexts/AuthContext";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import VoteSection from "../../components/common/VoteSection"; // New component for votes
 
 const ContributionDetailScreen = ({ route, navigation }) => {
-  const { contributionId, isEdit } = route.params || {};
-  const [loading, setLoading] = useState(isEdit);
-  const [initialValues, setInitialValues] = useState({
-    contribution_type: "other",
-    content: "",
-  });
+  const { contributionId } = route.params;
+  const [contribution, setContribution] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
   useEffect(() => {
-    if (isEdit && contributionId) {
-      fetchContributionDetails();
-    }
-  }, [isEdit, contributionId]);
+    fetchContributionDetails();
+  }, [contributionId]);
 
   const fetchContributionDetails = async () => {
     try {
       const data = await getContributionById(contributionId);
-      setInitialValues({
-        contribution_type: data.contribution_type || "other",
-        content: data.content || "",
-      });
+      setContribution(data);
     } catch (error) {
       console.error("Error fetching contribution details:", error.message);
       Alert.alert("Error", "Failed to load contribution details.");
@@ -49,41 +37,6 @@ const ContributionDetailScreen = ({ route, navigation }) => {
     }
   };
 
-  const contributionValidationSchema = Yup.object().shape({
-    contribution_type: Yup.string()
-      .oneOf(["route", "stop", "matatu"])
-      .required("Contribution type is required"),
-    content: Yup.string()
-      .min(10, "Content must be at least 10 characters")
-      .required("Content is required"),
-  });
-
-  const formik = useFormik({
-    initialValues: {
-      contribution_type: "route", // Set a default value
-      content: "",
-    },
-    validationSchema: contributionValidationSchema,
-    onSubmit: async (values) => {
-      try {
-        if (isEdit) {
-          await updateContribution(contributionId, values);
-          Alert.alert("Success", "Contribution updated successfully");
-        } else {
-          await createContribution(values);
-          Alert.alert("Success", "Contribution created successfully");
-        }
-        navigation.goBack();
-      } catch (error) {
-        console.error("Error submitting contribution:", error);
-        Alert.alert(
-          "Error",
-          error.response?.data?.error || "Failed to submit contribution"
-        );
-      }
-    },
-  });
-
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
@@ -92,50 +45,94 @@ const ContributionDetailScreen = ({ route, navigation }) => {
     );
   }
 
+  if (!contribution) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>Contribution not found.</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>
-        {isEdit ? "Edit Contribution" : "New Contribution"}
-      </Text>
+      {/* Basic Details Card */}
+      <Card style={styles.card}>
+        <Card.Title
+          title={`#${contribution.contribution_id} - ${contribution.contribution_type}`}
+          subtitle={`Submitted by: ${
+            contribution.contributorUser.username
+          } on ${new Date(contribution.date_submitted).toLocaleDateString()}`}
+          left={() => (
+            <MaterialCommunityIcons
+              name="information"
+              size={24}
+              color="#007AFF"
+            />
+          )}
+        />
+        <Card.Content>
+          <Text style={styles.sectionTitle}>Content</Text>
+          <Text style={styles.contentText}>{contribution.content}</Text>
 
-      <TextInput
-        label="Contribution Type"
-        value={formik.values.contribution_type}
-        onChangeText={formik.handleChange("contribution_type")}
-        onBlur={formik.handleBlur("contribution_type")}
-        mode="outlined"
-        style={styles.input}
-        selectTextOnFocus={false}
-        editable={false} // For simplicity, fixed types. Can implement a dropdown if needed.
-      />
-      <Text style={styles.noteText}>
-        Contribution Type: {formik.values.contribution_type}
-      </Text>
+          <Text style={styles.sectionTitle}>Status</Text>
+          <Text style={styles.statusText}>{contribution.status}</Text>
+        </Card.Content>
+      </Card>
 
-      <TextInput
-        label="Content"
-        value={formik.values.content}
-        onChangeText={formik.handleChange("content")}
-        onBlur={formik.handleBlur("content")}
-        mode="outlined"
-        style={styles.input}
-        multiline
-        numberOfLines={4}
-        error={formik.touched.content && formik.errors.content}
-      />
-      {formik.touched.content && formik.errors.content && (
-        <Text style={styles.errorText}>{formik.errors.content}</Text>
+      {/* Associated Details Card */}
+      <Card style={styles.card}>
+        <Card.Title
+          title="Associated Details"
+          left={() => (
+            <MaterialCommunityIcons name="link" size={24} color="#007AFF" />
+          )}
+        />
+        <Card.Content>
+          {contribution.route_id && (
+            <View style={styles.detailRow}>
+              <Text style={styles.label}>Route ID:</Text>
+              <Text style={styles.detailText}>{contribution.route_id}</Text>
+            </View>
+          )}
+          {contribution.stop_id && (
+            <View style={styles.detailRow}>
+              <Text style={styles.label}>Stop ID:</Text>
+              <Text style={styles.detailText}>{contribution.stop_id}</Text>
+            </View>
+          )}
+          {contribution.matatu_id && (
+            <View style={styles.detailRow}>
+              <Text style={styles.label}>Matatu ID:</Text>
+              <Text style={styles.detailText}>{contribution.matatu_id}</Text>
+            </View>
+          )}
+        </Card.Content>
+      </Card>
+
+      {/* Votes Section */}
+      <VoteSection contributionId={contribution.contribution_id} />
+
+      {/* Action Buttons */}
+      {user?.roleName === "admin" && (
+        <View style={styles.actionButtons}>
+          <Button
+            mode="contained"
+            onPress={() => navigation.goBack()}
+            style={styles.button}
+          >
+            Back
+          </Button>
+          <Button
+            mode="outlined"
+            onPress={() =>
+              navigation.navigate("EditContribution", { contributionId })
+            }
+            style={styles.button}
+          >
+            Edit Contribution
+          </Button>
+        </View>
       )}
-
-      <Button
-        mode="contained"
-        onPress={formik.handleSubmit}
-        loading={formik.isSubmitting}
-        disabled={formik.isSubmitting}
-        style={styles.submitButton}
-      >
-        {isEdit ? "Update Contribution" : "Submit Contribution"}
-      </Button>
     </ScrollView>
   );
 };
@@ -150,30 +147,56 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
+  card: {
+    borderRadius: 10,
+    elevation: 3,
     marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 15,
     color: "#007AFF",
   },
-  input: {
-    marginBottom: 10,
+  contentText: {
+    fontSize: 16,
+    marginTop: 5,
   },
-  noteText: {
-    fontSize: 14,
+  statusText: {
+    fontSize: 16,
+    marginTop: 5,
+    color: "#FF9500",
+  },
+  detailRow: {
+    flexDirection: "row",
+    marginTop: 10,
+  },
+  label: {
+    fontWeight: "bold",
+    fontSize: 16,
+    width: 100,
+  },
+  detailText: {
+    fontSize: 16,
+    flexShrink: 1,
+  },
+  actionButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  button: {
+    flex: 0.48,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 20,
+  },
+  emptyText: {
+    fontSize: 18,
     color: "#666666",
-    marginBottom: 10,
-  },
-  submitButton: {
-    marginTop: 20,
-    padding: 5,
-  },
-  errorText: {
-    fontSize: 14,
-    color: "#FF3B30",
-    marginBottom: 5,
-    marginLeft: 5,
   },
 });
 

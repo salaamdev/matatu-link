@@ -4,13 +4,13 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import CommunityScreen from "../screens/community/CommunityScreen";
 import ContributionDetailScreen from "../screens/community/ContributionDetailScreen";
-import ReportDetailScreen from "../screens/community/ReportDetailScreen";
+import ReportDetailScreen from "../screens/community/ReportDetailScreen"; // Add this import
 
 const Stack = createNativeStackNavigator();
 
 const CommunityStackNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName="CommunityMain">
+    <Stack.Navigator>
       <Stack.Screen
         name="CommunityMain"
         component={CommunityScreen}
@@ -19,16 +19,11 @@ const CommunityStackNavigator = () => {
       <Stack.Screen
         name="ContributionDetail"
         component={ContributionDetailScreen}
-        options={({ route }) => ({
-          title: route.params?.isEdit
-            ? "Edit Contribution"
-            : "Contribution Detail",
-        })}
       />
       <Stack.Screen
         name="ReportDetail"
         component={ReportDetailScreen}
-        options={{ title: "Report Detail" }}
+        options={{ title: "Report Details" }}
       />
     </Stack.Navigator>
   );

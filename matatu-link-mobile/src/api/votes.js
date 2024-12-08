@@ -1,4 +1,4 @@
-// src/api/votes.js
+// matatu-link-mobile/src/api/votes.js
 
 import api from './config';
 
@@ -9,10 +9,21 @@ import api from './config';
  */
 export const castVote = async (voteData) => {
     try {
-        const response = await api.post('/votes', voteData);
+        // Validate the vote data before sending
+        if (!voteData.contribution_id || !voteData.vote_type) {
+            throw new Error('Missing required vote data');
+        }
+
+        // Ensure proper data types
+        const payload = {
+            contribution_id: parseInt(voteData.contribution_id, 10),
+            vote_type: voteData.vote_type
+        };
+
+        const response = await api.post('/votes', payload);
         return response.data;
     } catch (error) {
-        console.error('Error casting vote:', error.message);
+        console.error('Error casting vote:', error);
         throw error;
     }
 };

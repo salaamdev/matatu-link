@@ -1,13 +1,13 @@
-// src/screens/community/tabs/components/ContributionItem.jsx
+// [matatu-link-mobile/src/screens/community/tabs/components/ContributionItem.jsx](matatu-link-mobile/src/screens/community/tabs/components/ContributionItem.jsx)
 
 import React, { useEffect, useState } from "react";
-import { TouchableOpacity, StyleSheet, View } from "react-native";
-import { Card, Text, IconButton } from "react-native-paper";
-import { Ionicons } from "@expo/vector-icons";
+import { TouchableOpacity, StyleSheet, View, Alert } from "react-native";
+import { Card, Text } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { castVote, getVotesForContribution } from "../../../../api/votes";
 import { useAuth } from "../../../../contexts/AuthContext";
 
-const ContributionItem = ({ contribution, onPress, onDelete }) => {
+const ContributionItem = ({ contribution, onPress }) => {
   const { user } = useAuth();
   const [votes, setVotes] = useState({ upvotes: 0, downvotes: 0 });
   const [userVote, setUserVote] = useState(null); // 'upvote' | 'downvote' | null
@@ -20,8 +20,7 @@ const ContributionItem = ({ contribution, onPress, onDelete }) => {
   const fetchVotes = async () => {
     try {
       const data = await getVotesForContribution(contribution.contribution_id);
-      setVotes(data);
-      // Check if the current user has voted
+      setVotes({ upvotes: data.upvotes, downvotes: data.downvotes });
       if (user) {
         const userSpecificVote = data.votes.find(
           (v) => v.user_id === user.user_id
@@ -51,23 +50,39 @@ const ContributionItem = ({ contribution, onPress, onDelete }) => {
 
     setVoting(true);
     try {
+      // Ensure contribution_id exists and is a number
+      if (!contribution?.contribution_id) {
+        throw new Error("Invalid contribution ID");
+      }
+
       await castVote({
         contribution_id: contribution.contribution_id,
         vote_type: voteType,
       });
-      // Update local vote counts
-      setVotes((prev) => ({
-        ...prev,
-        upvotes: voteType === "upvote" ? prev.upvotes + 1 : prev.upvotes,
-        downvotes:
-          voteType === "downvote" ? prev.downvotes + 1 : prev.downvotes,
-      }));
-      setUserVote(voteType);
+
+      // Refresh votes only after successful vote
+      await fetchVotes();
     } catch (error) {
-      console.error("Error casting vote:", error.message);
-      Alert.alert("Error", "Failed to cast vote.");
+      console.error("Error casting vote:", error);
+      Alert.alert(
+        "Error",
+        error.response?.data?.error || "Failed to cast vote. Please try again."
+      );
     } finally {
       setVoting(false);
+    }
+  };
+
+  const getContributionIcon = (type) => {
+    switch (type) {
+      case "route":
+        return "routes";
+      case "stop":
+        return "bus-stop";
+      case "matatu":
+        return "bus";
+      default:
+        return "comment-question";
     }
   };
 
@@ -75,23 +90,17 @@ const ContributionItem = ({ contribution, onPress, onDelete }) => {
     <TouchableOpacity onPress={onPress}>
       <Card style={styles.card}>
         <Card.Title
-          title={contribution.notification_type || "No Type"}
+          title={`#${contribution.contribution_id} - ${contribution.contribution_type}`}
           subtitle={`Submitted on: ${new Date(
-            contribution.date_sent
+            contribution.date_submitted
           ).toLocaleDateString()}`}
           left={(props) => (
-            <Ionicons name="create-outline" size={24} color="#007AFF" />
+            <MaterialCommunityIcons
+              name={getContributionIcon(contribution.contribution_type)}
+              size={24}
+              color="#007AFF"
+            />
           )}
-          right={() =>
-            onDelete && (
-              <IconButton
-                icon="delete"
-                color="#FF3B30"
-                size={24}
-                onPress={onDelete}
-              />
-            )
-          }
         />
         <Card.Content>
           <Text style={styles.contentText}>{contribution.content}</Text>
@@ -101,8 +110,8 @@ const ContributionItem = ({ contribution, onPress, onDelete }) => {
               onPress={() => handleVote("upvote")}
               disabled={voting}
             >
-              <Ionicons
-                name={userVote === "upvote" ? "thumbs-up" : "thumbs-up-outline"}
+              <MaterialCommunityIcons
+                name={userVote === "upvote" ? "thumb-up" : "thumb-up-outline"}
                 size={24}
                 color="#34C759"
               />
@@ -114,11 +123,9 @@ const ContributionItem = ({ contribution, onPress, onDelete }) => {
               onPress={() => handleVote("downvote")}
               disabled={voting}
             >
-              <Ionicons
+              <MaterialCommunityIcons
                 name={
-                  userVote === "downvote"
-                    ? "thumbs-down"
-                    : "thumbs-down-outline"
+                  userVote === "downvote" ? "thumb-down" : "thumb-down-outline"
                 }
                 size={24}
                 color="#FF3B30"

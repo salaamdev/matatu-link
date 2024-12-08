@@ -4,11 +4,12 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
+  ScrollView,
   ActivityIndicator,
   Alert,
-  ScrollView,
 } from "react-native";
-import { Text, Button, Card, Divider } from "react-native-paper";
+import { Card, Text, Button, Divider, Chip } from "react-native-paper";
+import { MaterialIcons } from "@expo/vector-icons";
 import { getReportById, updateReportStatus } from "../../api/reports";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -28,21 +29,21 @@ const ReportDetailScreen = ({ route, navigation }) => {
       setReport(data);
     } catch (error) {
       console.error("Error fetching report details:", error.message);
-      Alert.alert("Error", "Failed to load report details.");
+      Alert.alert("Error", "Failed to load report details");
       navigation.goBack();
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdateStatus = (newStatus) => {
+  const handleUpdateStatus = async (newStatus) => {
     Alert.alert(
       "Confirm Status Update",
       `Are you sure you want to mark this report as ${newStatus}?`,
       [
         { text: "Cancel", style: "cancel" },
         {
-          text: "Yes",
+          text: "Confirm",
           onPress: async () => {
             try {
               const updatedReport = await updateReportStatus(
@@ -50,10 +51,9 @@ const ReportDetailScreen = ({ route, navigation }) => {
                 newStatus
               );
               setReport(updatedReport);
-              Alert.alert("Success", "Report status updated successfully.");
+              Alert.alert("Success", "Report status updated successfully");
             } catch (error) {
-              console.error("Error updating report status:", error.message);
-              Alert.alert("Error", "Failed to update report status.");
+              Alert.alert("Error", "Failed to update report status");
             }
           },
         },
@@ -61,7 +61,20 @@ const ReportDetailScreen = ({ route, navigation }) => {
     );
   };
 
-  if (loading || !report) {
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "pending":
+        return "#FF9500";
+      case "reviewed":
+        return "#007AFF";
+      case "resolved":
+        return "#34C759";
+      default:
+        return "#8E8E93";
+    }
+  };
+
+  if (loading) {
     return (
       <View style={styles.loaderContainer}>
         <ActivityIndicator size="large" color="#007AFF" />
@@ -70,94 +83,172 @@ const ReportDetailScreen = ({ route, navigation }) => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView style={styles.container}>
+      {/* Header Card */}
       <Card style={styles.card}>
         <Card.Title
-          title={`Report ID: ${report.report_id}`}
-          subtitle={`Type: ${report.report_type}`}
+          title="Report Details"
+          subtitle={`Report #${report.report_id}`}
           left={(props) => (
             <MaterialIcons name="report" size={24} color="#FF9500" />
           )}
         />
         <Card.Content>
-          <Text style={styles.label}>Description:</Text>
-          <Text style={styles.text}>{report.description}</Text>
+          <Chip
+            style={[
+              styles.statusChip,
+              { backgroundColor: getStatusColor(report.status) },
+            ]}
+          >
+            {report.status.toUpperCase()}
+          </Chip>
+          <Text style={styles.sectionTitle}>Description</Text>
+          <Text style={styles.description}>{report.description}</Text>
           <Divider style={styles.divider} />
-          <Text style={styles.label}>Date Reported:</Text>
-          <Text style={styles.text}>
-            {new Date(report.date_reported).toLocaleDateString()}
-          </Text>
-          <Divider style={styles.divider} />
-          <Text style={styles.label}>Status:</Text>
-          <Text style={styles.text}>{report.status}</Text>
+          <Text style={styles.sectionTitle}>Report Information</Text>
+          <View style={styles.infoRow}>
+            <MaterialIcons name="calendar-today" size={20} color="#666666" />
+            <Text style={styles.infoText}>
+              Reported on: {new Date(report.date_reported).toLocaleString()}
+            </Text>
+          </View>
+          <View style={styles.infoRow}>
+            <MaterialIcons name="category" size={20} color="#666666" />
+            <Text style={styles.infoText}>
+              Type: {report.report_type.toUpperCase()}
+            </Text>
+          </View>
+
+          {report.reportUser && (
+            <>
+              <Divider style={styles.divider} />
+              <Text style={styles.sectionTitle}>Reporter Information</Text>
+              <View style={styles.infoRow}>
+                <MaterialIcons name="person" size={20} color="#666666" />
+                <Text style={styles.infoText}>
+                  Reported by: {report.reportUser.username}
+                </Text>
+              </View>
+            </>
+          )}
+
+          {report.reportMatatu && (
+            <>
+              <Divider style={styles.divider} />
+              <Text style={styles.sectionTitle}>Related Matatu</Text>
+              <View style={styles.infoRow}>
+                <MaterialIcons
+                  name="directions-bus"
+                  size={20}
+                  color="#666666"
+                />
+                <Text style={styles.infoText}>
+                  Registration: {report.reportMatatu.registration_number}
+                </Text>
+              </View>
+            </>
+          )}
+
+          {report.reportRoute && (
+            <>
+              <Divider style={styles.divider} />
+              <Text style={styles.sectionTitle}>Related Route</Text>
+              <View style={styles.infoRow}>
+                <MaterialIcons name="route" size={20} color="#666666" />
+                <Text style={styles.infoText}>
+                  Route: {report.reportRoute.route_name}
+                </Text>
+              </View>
+            </>
+          )}
         </Card.Content>
       </Card>
 
       {/* Admin Actions */}
       {user?.userRole?.role_name === "admin" && (
-        <View style={styles.adminActions}>
-          {report.status !== "reviewed" && (
-            <Button
-              mode="contained"
-              onPress={() => handleUpdateStatus("reviewed")}
-              style={styles.button}
-            >
-              Mark as Reviewed
-            </Button>
-          )}
-          {report.status !== "resolved" && (
-            <Button
-              mode="contained"
-              onPress={() => handleUpdateStatus("resolved")}
-              style={[styles.button, styles.resolveButton]}
-            >
-              Mark as Resolved
-            </Button>
-          )}
-        </View>
+        <Card style={[styles.card, styles.actionsCard]}>
+          <Card.Title title="Admin Actions" />
+          <Card.Content>
+            <View style={styles.adminActions}>
+              {report.status === "pending" && (
+                <Button
+                  mode="contained"
+                  onPress={() => handleUpdateStatus("reviewed")}
+                  style={[styles.button, { backgroundColor: "#007AFF" }]}
+                  icon="eye-check"
+                >
+                  Mark as Reviewed
+                </Button>
+              )}
+              {report.status !== "resolved" && (
+                <Button
+                  mode="contained"
+                  onPress={() => handleUpdateStatus("resolved")}
+                  style={[styles.button, { backgroundColor: "#34C759" }]}
+                  icon="check-circle"
+                >
+                  Mark as Resolved
+                </Button>
+              )}
+            </View>
+          </Card.Content>
+        </Card>
       )}
     </ScrollView>
   );
 };
 
-import { MaterialIcons } from "@expo/vector-icons";
-
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    backgroundColor: "#ffffff",
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+  },
+  card: {
+    margin: 10,
+    borderRadius: 10,
+    elevation: 3,
+  },
+  actionsCard: {
+    marginTop: 0,
+  },
+  statusChip: {
+    alignSelf: "flex-start",
+    marginBottom: 15,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333333",
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 14,
+    color: "#666666",
+    lineHeight: 20,
+  },
+  divider: {
+    marginVertical: 15,
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  infoText: {
+    marginLeft: 10,
+    fontSize: 14,
+    color: "#666666",
+  },
+  adminActions: {
+    gap: 10,
+  },
+  button: {
+    marginVertical: 5,
   },
   loaderContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  card: {
-    borderRadius: 10,
-    elevation: 3,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginTop: 10,
-  },
-  text: {
-    fontSize: 16,
-    marginTop: 5,
-  },
-  divider: {
-    marginVertical: 10,
-  },
-  adminActions: {
-    marginTop: 20,
-    alignItems: "center",
-  },
-  button: {
-    width: "80%",
-    marginVertical: 5,
-  },
-  resolveButton: {
-    backgroundColor: "#34C759",
   },
 });
 

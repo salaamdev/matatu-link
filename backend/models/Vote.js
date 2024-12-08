@@ -1,5 +1,6 @@
-// models/Vote.js
-const {DataTypes} = require('sequelize');
+// backend/models/Vote.js
+
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const User = require('./User');
 const Contribution = require('./Contribution');
@@ -47,7 +48,7 @@ const Vote = sequelize.define('Vote', {
     ],
 });
 
-Vote.belongsTo(User, {foreignKey: 'user_id', as: 'user'});
-Vote.belongsTo(Contribution, {foreignKey: 'contribution_id', as: 'contribution'});
+Vote.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+Vote.belongsTo(Contribution, { foreignKey: 'contribution_id', as: 'contribution' });
 
 module.exports = Vote;

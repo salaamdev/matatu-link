@@ -1,4 +1,4 @@
-// src/screens/community/tabs/ContributionsTab.jsx
+// matatu-link-mobile/src/screens/community/tabs/ContributionsTab.jsx
 
 import React, { useEffect, useState } from "react";
 import {
@@ -8,19 +8,19 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
-import { Text, Button, ActivityIndicator } from "react-native-paper";
-import {
-  getContributions,
-  deleteContribution,
-} from "../../../api/contributions";
+import { Text, ActivityIndicator } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native"; // Import the hook
 import ContributionItem from "./components/ContributionItem";
+import { getContributions } from "../../../api/contributions";
 import { useAuth } from "../../../contexts/AuthContext";
 
-const ContributionsTab = ({ navigation }) => {
+const ContributionsTab = () => {
+  // Remove navigation from props
   const [contributions, setContributions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuth();
+  const navigation = useNavigation(); // Initialize navigation using hook
 
   useEffect(() => {
     fetchContributions();
@@ -47,39 +47,16 @@ const ContributionsTab = ({ navigation }) => {
   const handleContributionPress = (contribution) => {
     navigation.navigate("ContributionDetail", {
       contributionId: contribution.contribution_id,
-      isEdit: false,
     });
   };
 
-  const handleDeleteContribution = (contributionId) => {
-    Alert.alert(
-      "Confirm Delete",
-      "Are you sure you want to delete this contribution?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteContribution(contributionId);
-              setContributions(
-                contributions.filter(
-                  (c) => c.contribution_id !== contributionId
-                )
-              );
-              Alert.alert("Success", "Contribution deleted successfully.");
-            } catch (error) {
-              console.error("Error deleting contribution:", error.message);
-              Alert.alert("Error", "Failed to delete contribution.");
-            }
-          },
-        },
-      ]
-    );
-  };
-  // When using the tab, make sure to pass navigation:
-  <ContributionsTab navigation={navigation} />;
+  const renderItem = ({ item }) => (
+    <ContributionItem
+      contribution={item}
+      onPress={() => handleContributionPress(item)}
+    />
+  );
+
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
@@ -98,26 +75,9 @@ const ContributionsTab = ({ navigation }) => {
         <FlatList
           data={contributions}
           keyExtractor={(item) => item.contribution_id.toString()}
-          renderItem={({ item }) => (
-            <ContributionItem
-              contribution={item}
-              onPress={() => handleContributionPress(item)}
-              onDelete={
-                user?.userRole?.role_name === "admin"
-                  ? () => handleDeleteContribution(item.contribution_id)
-                  : null
-              }
-            />
-          )}
+          renderItem={renderItem}
           refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={["#007AFF"]}
-            />
-          }
-          contentContainerStyle={
-            contributions.length === 0 && styles.flatListContainer
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         />
       )}
@@ -129,6 +89,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor: "#ffffff",
   },
   loaderContainer: {
     flex: 1,
@@ -142,10 +103,6 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     color: "#666666",
-  },
-  flatListContainer: {
-    flexGrow: 1,
-    justifyContent: "center",
   },
 });
 

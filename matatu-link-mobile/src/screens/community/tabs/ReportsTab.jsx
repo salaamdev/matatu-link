@@ -8,16 +8,18 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
-import { Text, Button, ActivityIndicator } from "react-native-paper";
+import { Text, ActivityIndicator } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native"; // Add this import
 import { getReports } from "../../../api/reports";
 import ReportItem from "./components/ReportItem";
 import { useAuth } from "../../../contexts/AuthContext";
 
-const ReportsTab = ({ navigation }) => {
+const ReportsTab = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuth();
+  const navigation = useNavigation(); // Add this line
 
   useEffect(() => {
     fetchReports();
