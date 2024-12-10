@@ -1,133 +1,141 @@
-// src/screens/profile/GenerateDBpdfsScreen.jsx
+// src/screens/GenerateDBpdfsScreen.jsx
 import React, { useState } from "react";
 import { View, ScrollView, StyleSheet, Alert } from "react-native";
-import { Card, Title, Paragraph, Button, Text } from "react-native-paper";
+import { Card, Title, Paragraph, Button, Divider } from "react-native-paper";
 import { MaterialIcons } from "@expo/vector-icons";
-import { UserActivityPdfGenerator } from "../../services/pdfGenerators/UserActivityPdfGenerator";
-import * as Sharing from "expo-sharing";
-
-const PdfGenerationCard = ({
-  title,
-  description,
-  iconName,
-  onPress,
-  loading,
-}) => (
-  <Card style={styles.card}>
-    <Card.Content style={styles.cardContent}>
-      <MaterialIcons
-        name={iconName}
-        size={32}
-        color="#007AFF"
-        style={styles.icon}
-      />
-      <Title>{title}</Title>
-      <Paragraph style={styles.description}>{description}</Paragraph>
-    </Card.Content>
-    <Card.Actions style={styles.cardActions}>
-      <Button
-        mode="contained"
-        onPress={onPress}
-        loading={loading}
-        icon="file-pdf-box"
-        style={styles.button}
-      >
-        Generate PDF
-      </Button>
-    </Card.Actions>
-  </Card>
-);
-
+import api from "../../api/config";
+import { generateMatatuPDF } from "../../utils/matatuPdfGenerator";
+import { generateRoutesPDF } from "../../utils/routesPdfGenerator";
+import { generateUsersPDF } from "../../utils/userPdfGenerator";
+import { generateReportsPDF } from "../../utils/reportsPdfGenerator";
+import { generateContributionsPDF } from "../../utils/contributionsPdfGenerator";
+import { generateFaresPDF } from "../../utils/faresPdfGenerator";
 const GenerateDBpdfsScreen = () => {
-  const [generating, setGenerating] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleUserActivityReport = async () => {
+  const categories = [
+    {
+      id: "matatus",
+      title: "Matatus Database",
+      description:
+        "Generate PDF containing all matatu records including registration numbers, routes, and status",
+      icon: "directions-bus",
+    },
+    {
+      id: "routes",
+      title: "Routes Database",
+      description:
+        "Generate PDF with all route information including stops and fares",
+      icon: "route",
+    },
+    {
+      id: "users",
+      title: "Users Database",
+      description:
+        "Generate PDF of all user records (excluding sensitive information)",
+      icon: "people",
+    },
+    {
+      id: "reports",
+      title: "Reports Database",
+      description:
+        "Generate PDF containing all reported issues and their status",
+      icon: "report",
+    },
+    {
+      id: "contributions",
+      title: "Contributions Database",
+      description: "Generate PDF of all user contributions and suggestions",
+      icon: "comment",
+    },
+    {
+      id: "fares",
+      title: "Fares Database",
+      description: "Generate PDF with fare history and payment records",
+      icon: "payments",
+    },
+  ];
+  const handleGeneratePDF = async (categoryId) => {
+    setLoading(true);
     try {
-      setGenerating(true);
-      const generator = new UserActivityPdfGenerator();
-      const pdfPath = await generator.generateActivityReport();
+      switch (categoryId) {
+        case "matatus":
+          const matatusResponse = await api.get("/matatus");
+          await generateMatatuPDF(matatusResponse.data);
+          break;
 
-      if (!pdfPath) {
-        throw new Error("No PDF path returned");
+        case "routes":
+          const routesResponse = await api.get("/routes");
+          await generateRoutesPDF(routesResponse.data);
+          break;
+
+        case "users":
+          const usersResponse = await api.get("/users");
+          await generateUsersPDF(usersResponse.data);
+          break;
+
+        case "reports":
+          const reportsResponse = await api.get("/reports");
+          await generateReportsPDF(reportsResponse.data);
+          break;
+
+        case "contributions":
+          const contributionsResponse = await api.get("/contributions");
+          await generateContributionsPDF(contributionsResponse.data);
+          break;
+
+        case "fares":
+          const faresResponse = await api.get("/fares");
+          await generateFaresPDF(faresResponse.data);
+          break;
+
+        default:
+          console.log(`Generate PDF for ${categoryId}`);
+          return;
       }
 
-      if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(pdfPath, {
-          mimeType: "application/pdf",
-          dialogTitle: "User Activity Report",
-        });
-      } else {
-        throw new Error("Sharing not available on this device");
-      }
+      Alert.alert("Success", "PDF generated successfully!");
     } catch (error) {
-      console.error("PDF Generation Error:", error);
-      Alert.alert("Error", `Failed to generate PDF report: ${error.message}`);
+      console.error("Error generating PDF:", error);
+      Alert.alert("Error", "Failed to generate PDF. Please try again.");
     } finally {
-      setGenerating(false);
+      setLoading(false);
     }
   };
 
-  const pdfOptions = [
-    {
-      title: "User Activity Report",
-      description: "Generate a detailed PDF report of user activities...",
-      iconName: "people",
-      onPress: handleUserActivityReport,
-      loading: generating,
-    },
-    {
-      title: "Matatu Fleet Analysis",
-      description:
-        "Create a comprehensive PDF document showing matatu fleet statistics, routes, and operator performance metrics with visual representations.",
-      iconName: "directions-bus",
-      onPress: () => console.log("Generate Fleet Analysis PDF"),
-    },
-    {
-      title: "Route Performance Dashboard",
-      description:
-        "Export a PDF dashboard displaying route statistics, popular stops, and fare collection data with interactive maps and charts.",
-      iconName: "route",
-      onPress: () => console.log("Generate Route Performance PDF"),
-    },
-    {
-      title: "Safety & Incident Report",
-      description:
-        "Generate a detailed PDF report of safety incidents, resolved issues, and security concerns with timeline visualizations.",
-      iconName: "security",
-      onPress: () => console.log("Generate Safety Report PDF"),
-    },
-    {
-      title: "Financial Summary",
-      description:
-        "Create a comprehensive PDF of financial transactions, fare collections, and revenue analysis with detailed breakdowns and trends.",
-      iconName: "attach-money",
-      onPress: () => console.log("Generate Financial Summary PDF"),
-    },
-    {
-      title: "Community Engagement Report",
-      description:
-        "Export a PDF report showcasing user contributions, feedback, and community participation metrics with engagement analytics.",
-      iconName: "group-work",
-      onPress: () => console.log("Generate Community Report PDF"),
-    },
-  ];
-
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Database Reports</Text>
-      <Text style={styles.subheader}>
-        Generate comprehensive PDF reports from your database
-      </Text>
+      <Title style={styles.screenTitle}>Database PDF Generator</Title>
+      <Paragraph style={styles.screenDescription}>
+        Generate PDF reports from different database collections
+      </Paragraph>
+      <Divider style={styles.divider} />
 
-      {pdfOptions.map((option, index) => (
-        <PdfGenerationCard
-          key={index}
-          title={option.title}
-          description={option.description}
-          iconName={option.iconName}
-          onPress={option.onPress}
-          loading={option.loading}
-        />
+      {categories.map((category) => (
+        <Card key={category.id} style={styles.card}>
+          <Card.Content>
+            <View style={styles.cardHeader}>
+              <MaterialIcons name={category.icon} size={24} color="#007AFF" />
+              <Title style={styles.cardTitle}>{category.title}</Title>
+            </View>
+            <Paragraph style={styles.description}>
+              {category.description}
+            </Paragraph>
+          </Card.Content>
+          <Card.Actions style={styles.cardActions}>
+            <Button
+              mode="contained"
+              icon="file-pdf-box"
+              onPress={() => handleGeneratePDF(category.id)}
+              style={styles.generateButton}
+              labelStyle={styles.buttonLabel}
+              loading={loading && category.id === "matatus"}
+              disabled={loading}
+            >
+              Generate PDF
+            </Button>
+          </Card.Actions>
+        </Card>
       ))}
     </ScrollView>
   );
@@ -139,42 +147,51 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
     padding: 16,
   },
-  header: {
+  screenTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#333",
+    color: "#333333",
     marginBottom: 8,
-    textAlign: "center",
   },
-  subheader: {
+  screenDescription: {
     fontSize: 16,
-    color: "#666",
-    marginBottom: 24,
-    textAlign: "center",
+    color: "#666666",
+    marginBottom: 16,
+  },
+  divider: {
+    marginBottom: 16,
   },
   card: {
     marginBottom: 16,
     borderRadius: 12,
     elevation: 4,
   },
-  cardContent: {
+  cardHeader: {
+    flexDirection: "row",
     alignItems: "center",
-    padding: 16,
+    marginBottom: 8,
   },
-  icon: {
-    marginBottom: 12,
+  cardTitle: {
+    marginLeft: 12,
+    fontSize: 18,
+    fontWeight: "bold",
   },
   description: {
-    textAlign: "center",
-    marginTop: 8,
-    color: "#666",
+    color: "#666666",
+    fontSize: 14,
+    marginLeft: 36,
   },
   cardActions: {
-    justifyContent: "center",
+    justifyContent: "flex-end",
+    paddingRight: 16,
     paddingBottom: 16,
   },
-  button: {
-    paddingHorizontal: 16,
+  generateButton: {
+    backgroundColor: "#007AFF",
+  },
+  buttonLabel: {
+    fontSize: 14,
+    color: "#FFFFFF",
   },
 });
 

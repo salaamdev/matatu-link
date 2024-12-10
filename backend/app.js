@@ -18,6 +18,7 @@ const reportRoutes = require('./routes/reportRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const fareRoutes = require('./routes/fareRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 
 
@@ -43,8 +44,7 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/fares', fareRoutes);
 app.use('/api/payments', paymentRoutes);
-
-
+app.use('/api/users', userRoutes);
 
 // Socket.io setup
 io.on('connection', (socket) => {

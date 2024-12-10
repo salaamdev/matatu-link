@@ -1,7 +1,8 @@
 // backend/controllers/userController.js
 
-const {User, Contribution, Report} = require('../models');
-const {Op} = require('sequelize');
+const { User, UserRole, Contribution, Report } = require('../models');
+const { Op } = require('sequelize');
+const sequelize = require('../config/database'); // Ensure sequelize is properly imported
 
 /**
  * Get user activity statistics.
@@ -10,40 +11,56 @@ const {Op} = require('sequelize');
  */
 exports.getUserActivityStats = async (req, res) => {
     try {
-        const totalUsers = await User.count();
-        const activeUsers = await User.count({where: {isActive: true}});
-        const newRegistrations = await User.count({
-            where: {
-                createdAt: {
-                    [Op.gte]: new Date(new Date().setDate(new Date().getDate() - 30)) // Last 30 days
+        const stats = await User.findAll({
+            include: [
+                {
+                    model: UserRole,
+                    as: 'userRole',
+                    attributes: ['role_name']
+                },
+                {
+                    model: Contribution,
+                    as: 'userContributions'
+                },
+                {
+                    model: Report,
+                    as: 'userReports'
                 }
-            }
+            ]
         });
-        const totalContributions = await Contribution.count();
-        const totalReports = await Report.count();
 
-        // Example calculation for average daily activity
-        const activityData = await Contribution.findAll({
-            attributes: [
-                [sequelize.fn('DATE', sequelize.col('createdAt')), 'date'],
-                [sequelize.fn('COUNT', sequelize.col('id')), 'count']
-            ],
-            group: ['date']
-        });
-        const avgDailyActivity = activityData.length > 0
-            ? Math.round(activityData.reduce((acc, curr) => acc + parseInt(curr.dataValues.count), 0) / activityData.length)
-            : 0;
-
-        res.status(200).json({
-            totalUsers,
-            activeUsers,
-            newRegistrations,
-            totalContributions,
-            totalReports,
-            avgDailyActivity
-        });
+        res.status(200).json(stats);
     } catch (error) {
-        console.error('Error fetching user activity stats:', error);
-        res.status(500).json({error: 'Failed to fetch user activity stats'});
+        console.error('Error fetching user stats:', error);
+        res.status(500).json({ error: 'Failed to fetch user statistics' });
+    }
+};
+exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await User.findAll({
+            attributes: ['user_id', 'username', 'email', 'date_joined', 'is_active', 'role_id'],
+            include: [
+                {
+                    model: UserRole,
+                    as: 'userRole',
+                    attributes: ['role_name']
+                },
+                {
+                    model: Contribution,
+                    as: 'userContributions',
+                    attributes: ['contribution_id']
+                },
+                {
+                    model: Report,
+                    as: 'userReports',
+                    attributes: ['report_id']
+                }
+            ]
+        });
+
+        res.status(200).json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ error: 'Failed to fetch users' });
     }
 };

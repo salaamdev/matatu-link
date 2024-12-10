@@ -68,21 +68,31 @@ exports.getUserFares = async (req, res) => {
 };
 
 // Get all fares (admin only)
+// In fareController.js
 exports.getAllFares = async (req, res) => {
-    try {
-        const fares = await Fare.findAll({
-            include: [
-                {model: User, as: 'user', attributes: ['user_id', 'username', 'email']},
-                {model: Matatu, as: 'matatu', attributes: ['matatu_id', 'registration_number']},
-                {model: Route, as: 'route', attributes: ['route_id', 'route_name']},
-                {model: Payment, as: 'payments'},
-            ],
-            order: [['date_paid', 'DESC']],
-        });
-
-        res.status(200).json(fares);
-    } catch (error) {
-        console.error('Error fetching all fares:', error);
-        res.status(500).json({error: 'Failed to fetch fares'});
-    }
+  try {
+    const fares = await Fare.findAll({
+      include: [
+        {
+          model: User,
+          as: 'fareUser',
+          attributes: ['username']
+        },
+        {
+          model: Matatu,
+          as: 'fareMatatu',
+          attributes: ['registration_number']
+        },
+        {
+          model: Route,
+          as: 'fareRoute',
+          attributes: ['route_name']
+        }
+      ]
+    });
+    res.status(200).json(fares);
+  } catch (error) {
+    console.error('Error fetching fares:', error);
+    res.status(500).json({ error: 'Failed to fetch fares' });
+  }
 };
