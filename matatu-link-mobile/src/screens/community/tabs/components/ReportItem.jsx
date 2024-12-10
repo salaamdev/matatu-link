@@ -78,6 +78,10 @@ const styles = StyleSheet.create({
   statusBadge: {
     marginRight: 15,
   },
+  selectedCard: {
+    borderColor: "#007AFF",
+    borderWidth: 2,
+  },
 });
 
 export default ReportItem;

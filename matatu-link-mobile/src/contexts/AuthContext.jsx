@@ -17,10 +17,9 @@ export const AuthProvider = ({ children }) => {
         const response = await api.get("/auth/profile");
         setUser(response.data);
       } catch (error) {
-        console.log("Auth initialization error:", error.message);
-        // Clear any stored token
+        // Handle 401 error silently during initialization
+        console.log("Not authenticated yet");
         await setAuthToken(null);
-        // Ensure user is set to null to show login screen
         setUser(null);
       } finally {
         setLoading(false);

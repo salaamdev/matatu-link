@@ -94,7 +94,7 @@ const ReportDetailScreen = ({ route, navigation }) => {
       </Card>
 
       {/* Admin Actions */}
-      {user?.userRole?.role_name === "admin" && (
+      {user?.roleName === "admin" && (
         <View style={styles.adminActions}>
           {report.status !== "reviewed" && (
             <Button

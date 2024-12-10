@@ -153,3 +153,53 @@ exports.getReportById = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch report details' });
     }
 };
+
+// Add this method to handle report updates
+exports.updateReport = async (req, res) => {
+    const {id} = req.params;
+    const {report_type, description, matatu_id, route_id} = req.body;
+
+    if (!id || isNaN(id)) {
+        return res.status(400).json({error: 'Invalid or missing report ID'});
+    }
+
+    try {
+        const report = await Report.findByPk(id);
+        if (!report) {
+            return res.status(404).json({error: 'Report not found'});
+        }
+
+        await report.update({
+            report_type: report_type || report.report_type,
+            description: description || report.description,
+            matatu_id: matatu_id || report.matatu_id,
+            route_id: route_id || report.route_id
+        });
+
+        // Fetch updated report with associations
+        const updatedReport = await Report.findByPk(id, {
+            include: [
+                {
+                    model: User,
+                    as: 'reportUser',
+                    attributes: ['user_id', 'username', 'email']
+                },
+                {
+                    model: Matatu,
+                    as: 'reportMatatu',
+                    attributes: ['matatu_id', 'registration_number']
+                },
+                {
+                    model: Route,
+                    as: 'reportRoute',
+                    attributes: ['route_id', 'route_name']
+                }
+            ]
+        });
+
+        res.status(200).json(updatedReport);
+    } catch (error) {
+        console.error(`Error updating report with ID ${ id }:`, error);
+        res.status(500).json({error: 'Failed to update report'});
+    }
+};

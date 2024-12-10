@@ -10,12 +10,12 @@ const {body} = require('express-validator');
 router.use(authMiddleware);
 
 // POST /api/reports - Submit a new report
-router.post('/', [
-    body('report_type').isIn(['safety', 'security', 'other']).withMessage('Invalid report type'),
-    body('description').notEmpty().withMessage('Description is required'),
+router.put('/:id', [
+    body('report_type').optional().isIn(['safety', 'security', 'other']).withMessage('Invalid report type'),
+    body('description').optional().notEmpty().withMessage('Description cannot be empty'),
     body('matatu_id').optional().isInt().withMessage('matatu_id must be an integer'),
     body('route_id').optional().isInt().withMessage('route_id must be an integer'),
-], reportController.submitReport);
+], reportController.updateReport);
 
 // GET /api/reports - Retrieve all reports (admin only)
 router.get('/', rbacMiddleware([1]), reportController.getAllReports);

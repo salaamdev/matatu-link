@@ -9,21 +9,46 @@ exports.createContribution = async (req, res) => {
         return res.status(400).json({errors: errors.array()});
     }
 
-    const {contribution_type, content} = req.body;
+    const {contribution_type, content, route_id, stop_id, matatu_id} = req.body;
     const user_id = req.user.userId;
 
     try {
+        // Validate contribution type
+        if (!['route', 'stop', 'matatu'].includes(contribution_type)) {
+            return res.status(400).json({error: 'Invalid contribution type'});
+        }
+
+        // Validate IDs based on contribution type
+        if (route_id) {
+            const route = await Route.findByPk(route_id);
+            if (!route) {
+                return res.status(400).json({error: 'Invalid route_id'});
+            }
+        }
+        if (stop_id) {
+            const stop = await Stop.findByPk(stop_id);
+            if (!stop) {
+                return res.status(400).json({error: 'Invalid stop_id'});
+            }
+        }
+        if (matatu_id) {
+            const matatu = await Matatu.findByPk(matatu_id);
+            if (!matatu) {
+                return res.status(400).json({error: 'Invalid matatu_id'});
+            }
+        }
+
         const newContribution = await Contribution.create({
             user_id,
             contribution_type,
             content,
-            route_id: null,
-            stop_id: null,
-            matatu_id: null,
-            status: 'pending',
-            date_submitted: new Date()
+            route_id: contribution_type === 'route' ? route_id : null,
+            stop_id: contribution_type === 'stop' ? stop_id : null,
+            matatu_id: contribution_type === 'matatu' ? matatu_id : null,
+            status: 'pending'
         });
 
+        // Fetch the created contribution with associations
         const contribution = await Contribution.findByPk(newContribution.contribution_id, {
             include: [
                 {
@@ -37,7 +62,7 @@ exports.createContribution = async (req, res) => {
         res.status(201).json(contribution);
     } catch (error) {
         console.error('Error creating contribution:', error);
-        res.status(500).json({error: 'Failed to create contribution'});
+        res.status(500).json({error: error.message || 'Failed to create contribution'});
     }
 };
 

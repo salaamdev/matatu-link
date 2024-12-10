@@ -18,10 +18,18 @@ router.post('/', [
     body('content')
         .notEmpty()
         .withMessage('Content is required'),
-    // Make foreign key fields optional
-    body('route_id').optional().isInt(),
-    body('stop_id').optional().isInt(),
-    body('matatu_id').optional().isInt()
+    body('route_id')
+        .optional({nullable: true})
+        .isInt()
+        .withMessage('route_id must be an integer'),
+    body('stop_id')
+        .optional({nullable: true})
+        .isInt()
+        .withMessage('stop_id must be an integer'),
+    body('matatu_id')
+        .optional({nullable: true})
+        .isInt()
+        .withMessage('matatu_id must be an integer')
 ], contributionController.createContribution);
 
 // GET /api/contributions - Retrieve all contributions

@@ -63,7 +63,7 @@ const PaymentMethodItem = ({ method }) => {
           />
         )}
         right={() =>
-          user?.userRole?.role_name === "admin" ? (
+          user?.roleName === "admin" ? (
             <IconButton
               icon="delete"
               color="#FF3B30"

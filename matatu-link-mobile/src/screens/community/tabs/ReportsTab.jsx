@@ -9,8 +9,9 @@ import {
   Alert,
 } from "react-native";
 import { Text, ActivityIndicator } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native"; // Add this import
-import { getReports } from "../../../api/reports";
+import { useNavigation } from "@react-navigation/native";
+import CommunityActionButton from "../../../components/common/CommunityActionButton";
+import { getReports, deleteReport } from "../../../api/reports";
 import ReportItem from "./components/ReportItem";
 import { useAuth } from "../../../contexts/AuthContext";
 
@@ -18,8 +19,10 @@ const ReportsTab = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
   const { user } = useAuth();
-  const navigation = useNavigation(); // Add this line
+  const navigation = useNavigation();
 
   useEffect(() => {
     fetchReports();
@@ -43,12 +46,62 @@ const ReportsTab = () => {
     fetchReports();
   };
 
+  const handleAdd = () => {
+    // Change from CreateReport to CreateEditReport
+    navigation.navigate("CreateEditReport", {
+      // No reportId means this is a new report
+      reportId: null,
+    });
+  };
+
+  const handleEdit = () => {
+    if (selectedId) {
+      navigation.navigate("EditReport", { reportId: selectedId });
+    }
+  };
+
+  const handleDelete = () => {
+    if (!selectedId) return;
+
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this report?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteReport(selectedId);
+              setReports(reports.filter((r) => r.report_id !== selectedId));
+              setSelectionMode(false);
+              setSelectedId(null);
+              Alert.alert("Success", "Report deleted successfully");
+            } catch (error) {
+              Alert.alert("Error", "Failed to delete report");
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleReportPress = (report) => {
-    navigation.navigate("ReportDetail", { reportId: report.report_id });
+    if (selectionMode) {
+      setSelectedId(selectedId === report.report_id ? null : report.report_id);
+    } else {
+      navigation.navigate("ReportDetail", { reportId: report.report_id });
+    }
   };
 
   const renderReportItem = ({ item }) => (
-    <ReportItem report={item} onPress={() => handleReportPress(item)} />
+    <ReportItem
+      report={item}
+      onPress={() => handleReportPress(item)}
+      selected={selectedId === item.report_id}
+      selectionMode={selectionMode}
+    />
   );
 
   if (loading) {
@@ -82,6 +135,16 @@ const ReportsTab = () => {
           }
         />
       )}
+      <CommunityActionButton
+        onAdd={handleAdd}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        selectionMode={selectionMode}
+        setSelectionMode={setSelectionMode}
+        selectedId={selectedId}
+        setSelectedId={setSelectedId}
+        type="report"
+      />
     </View>
   );
 };

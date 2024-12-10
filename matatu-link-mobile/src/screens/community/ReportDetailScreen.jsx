@@ -61,6 +61,30 @@ const ReportDetailScreen = ({ route, navigation }) => {
     );
   };
 
+  const handleDelete = () => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this report?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteReport(reportId);
+              Alert.alert("Success", "Report deleted successfully");
+              navigation.goBack();
+            } catch (error) {
+              console.error("Error deleting report:", error.message);
+              Alert.alert("Error", "Failed to delete report");
+            }
+          },
+        },
+      ]
+    );
+  };
+  
   const getStatusColor = (status) => {
     switch (status) {
       case "pending":
@@ -165,7 +189,7 @@ const ReportDetailScreen = ({ route, navigation }) => {
       </Card>
 
       {/* Admin Actions */}
-      {user?.userRole?.role_name === "admin" && (
+      {user?.roleName === "admin" && (
         <Card style={[styles.card, styles.actionsCard]}>
           <Card.Title title="Admin Actions" />
           <Card.Content>
@@ -190,6 +214,26 @@ const ReportDetailScreen = ({ route, navigation }) => {
                   Mark as Resolved
                 </Button>
               )}
+              <Button
+                mode="contained"
+                icon="pencil"
+                onPress={() =>
+                  navigation.navigate("CreateEditReport", {
+                    reportId: report.report_id,
+                  })
+                }
+                style={styles.button}
+              >
+                Edit
+              </Button>
+              <Button
+                mode="contained"
+                icon="delete"
+                onPress={handleDelete}
+                style={[styles.button, { backgroundColor: "#FF3B30" }]}
+              >
+                Delete
+              </Button>
             </View>
           </Card.Content>
         </Card>

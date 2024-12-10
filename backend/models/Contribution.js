@@ -6,7 +6,7 @@ const Contribution = sequelize.define('Contribution', {
     contribution_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true,
+        autoIncrement: true // This ensures auto-incrementing IDs
     },
     user_id: {
         type: DataTypes.INTEGER,

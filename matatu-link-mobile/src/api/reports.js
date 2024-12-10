@@ -63,3 +63,19 @@ export const updateReportStatus = async (reportId, status) => {
         throw error;
     }
 };
+
+/**
+ * Update an existing report.
+ * @param {number} reportId - The ID of the report to update.
+ * @param {Object} reportData - The updated report data.
+ * @returns {Promise<Object>} The updated report object.
+ */
+export const updateReport = async (reportId, reportData) => {
+    try {
+        const response = await api.put(`/reports/${ reportId }`, reportData);
+        return response.data;
+    } catch (error) {
+        console.error(`Error updating report with ID ${ reportId }:`, error.message);
+        throw error;
+    }
+};

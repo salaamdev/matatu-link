@@ -212,7 +212,7 @@ const MatatuDetailScreen = ({ route, navigation }) => {
       )}
 
       {/* Admin Actions: Edit and Delete Buttons */}
-      {user?.userRole?.role_name === "admin" && (
+      {user?.roleName === "admin" && (
         <View style={styles.adminActions}>
           <Button
             mode="contained"

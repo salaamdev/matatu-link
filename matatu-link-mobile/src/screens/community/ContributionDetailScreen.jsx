@@ -13,6 +13,7 @@ import { getContributionById } from "../../api/contributions";
 import { useAuth } from "../../contexts/AuthContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import VoteSection from "../../components/common/VoteSection"; // New component for votes
+import { deleteContribution } from "../../api/contributions"; // Add this import
 
 const ContributionDetailScreen = ({ route, navigation }) => {
   const { contributionId } = route.params;
@@ -23,6 +24,29 @@ const ContributionDetailScreen = ({ route, navigation }) => {
   useEffect(() => {
     fetchContributionDetails();
   }, [contributionId]);
+  // Inside ContributionDetailScreen component
+  const handleDelete = () => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this contribution?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteContribution(contributionId);
+              Alert.alert("Success", "Contribution deleted successfully");
+              navigation.goBack();
+            } catch (error) {
+              Alert.alert("Error", "Failed to delete contribution");
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const fetchContributionDetails = async () => {
     try {
@@ -58,7 +82,7 @@ const ContributionDetailScreen = ({ route, navigation }) => {
       {/* Basic Details Card */}
       <Card style={styles.card}>
         <Card.Title
-          title={`#${contribution.contribution_id} - ${contribution.contribution_type}`}
+          title={`${contribution.contribution_type} - Id:${contribution.contribution_id}`}
           subtitle={`Submitted by: ${
             contribution.contributorUser.username
           } on ${new Date(contribution.date_submitted).toLocaleDateString()}`}
@@ -117,19 +141,21 @@ const ContributionDetailScreen = ({ route, navigation }) => {
         <View style={styles.actionButtons}>
           <Button
             mode="contained"
-            onPress={() => navigation.goBack()}
-            style={styles.button}
+            onPress={handleDelete}
+            style={[styles.button, styles.deleteButton]}
+            icon="delete"
           >
-            Back
+            Delete
           </Button>
           <Button
-            mode="outlined"
+            mode="contained"
             onPress={() =>
-              navigation.navigate("EditContribution", { contributionId })
+              navigation.navigate("CreateEditContribution", { contributionId })
             }
             style={styles.button}
+            icon="pencil"
           >
-            Edit Contribution
+            Edit
           </Button>
         </View>
       )}
@@ -197,6 +223,9 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     color: "#666666",
+  },
+  deleteButton: {
+    backgroundColor: "#FF3B30"
   },
 });
 
