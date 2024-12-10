@@ -26,6 +26,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-file-system",
+        {
+          "filePermission": "Allows reading and writing files to the app's directory."
+        }
+      ]
+    ]
   }
 }

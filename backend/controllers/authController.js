@@ -114,3 +114,48 @@ exports.getProfile = async (req, res) => {
         res.status(500).json({error: 'Failed to fetch profile'});
     }
 };
+
+exports.updateProfile = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const {username, email, phone_number, full_name, bio, notifications} = req.body;
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({error: 'User not found'});
+        }
+
+        // Check if email is already taken by another user
+        if (email !== user.email) {
+            const existingUser = await User.findOne({where: {email}});
+            if (existingUser) {
+                return res.status(400).json({error: 'Email already in use'});
+            }
+        }
+
+        // Update user
+        await user.update({
+            username,
+            email,
+            phone_number,
+            full_name,
+            bio,
+            notifications
+        });
+
+        // Fetch updated user with role information
+        const updatedUser = await User.findByPk(userId, {
+            attributes: {exclude: ['password_hash']},
+            include: [{
+                model: UserRole,
+                as: 'userRole',
+                attributes: ['role_id', 'role_name']
+            }]
+        });
+
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        res.status(500).json({error: 'Failed to update profile'});
+    }
+};

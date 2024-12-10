@@ -3,7 +3,7 @@ import React from 'react';
 
 const Stack = createStackNavigator();
 
-const ReportsStackNavigator = () => {
+const ProfileReportsStackNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen 
@@ -15,4 +15,4 @@ const ReportsStackNavigator = () => {
   );
 };
 
-export default ReportsStackNavigator;
+export default ProfileReportsStackNavigator;

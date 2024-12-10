@@ -3,6 +3,7 @@ const express = require('express');
 const { register, login, getProfile } = require('../controllers/authController');
 const { body } = require('express-validator');
 const authMiddleware = require('../middlewares/authMiddleware'); // Import authMiddleware
+const authController = require('../controllers/authController'); // Import authController
 const router = express.Router();
 
 // Registration Route with Validation
@@ -21,5 +22,7 @@ router.post('/login', [
 
 // Profile Route
 router.get('/profile', authMiddleware, getProfile); // Use authController.getProfile
+// Add this near other routes
+router.put('/profile', authMiddleware, authController.updateProfile);
 
 module.exports = router;

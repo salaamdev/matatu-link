@@ -9,8 +9,8 @@ import api from './config';
  */
 export const updateUserProfile = async (profileData) => {
   try {
-    const response = await api.put('/profile', profileData); // Ensure this endpoint exists
-    return response.data; // Assuming the backend returns the updated user object
+    const response = await api.put('/auth/profile', profileData); // Updated endpoint
+    return response.data;
   } catch (error) {
     console.error('Error updating user profile:', error.message);
     throw error;

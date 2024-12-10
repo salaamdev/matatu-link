@@ -1,12 +1,12 @@
 // src/navigation/ProfileStackNavigator.jsx
-
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ProfileScreen from "../screens/profile/ProfileScreen";
 import SettingsScreen from "../screens/profile/SettingsScreen";
 import PaymentScreen from "../screens/profile/PaymentScreen";
-import AddPaymentMethodScreen from "../screens/profile/AddPaymentMethodScreen"; // Import AddPaymentMethodScreen
-import ReportDetailScreen from "../screens/profile/ReportDetailScreen"; // Import ReportDetailScreen
+import ReportsScreen from "../screens/profile/GenerateDBpdfsScreen";
+import HelpScreen from "../screens/profile/HelpScreen";
+import AboutScreen from "../screens/profile/AboutScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -29,16 +29,20 @@ const ProfileStackNavigator = () => {
         options={{ title: "Payment" }}
       />
       <Stack.Screen
-        name="AddPaymentMethod"
-        component={AddPaymentMethodScreen}
-        options={{ title: "Add Payment Method" }}
+        name="Reports"
+        component={ReportsScreen}
+        options={{ title: "Reports" }}
       />
       <Stack.Screen
-        name="ReportDetail"
-        component={ReportDetailScreen}
-        options={{ title: "Report Detail" }}
+        name="Help"
+        component={HelpScreen}
+        options={{ title: "Help" }}
       />
-      {/* Add more screens here if needed */}
+      <Stack.Screen
+        name="About"
+        component={AboutScreen}
+        options={{ title: "About" }}
+      />
     </Stack.Navigator>
   );
 };
