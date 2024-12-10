@@ -15,28 +15,53 @@ const CreateEditReport = ({ route, navigation }) => {
   const [loading, setLoading] = useState(!!reportId);
 
   const validationSchema = Yup.object().shape({
-    description: Yup.string().required("Description is required"),
-    report_type: Yup.string().required("Report type is required"),
+    description: Yup.string()
+      .required("Description is required")
+      .min(10, "Description must be at least 10 characters"),
+    report_type: Yup.string()
+      .oneOf(["safety", "security", "other"], "Invalid report type")
+      .required("Report type is required"),
+    matatu_id: Yup.string()
+      .nullable()
+      .transform((value) => (value === "" ? null : value)),
+    route_id: Yup.string()
+      .nullable()
+      .transform((value) => (value === "" ? null : value)),
   });
 
   const formik = useFormik({
     initialValues: {
       description: "",
       report_type: "safety",
+      matatu_id: "",
+      route_id: "",
     },
     validationSchema,
     onSubmit: async (values) => {
       try {
+        setLoading(true);
+        const payload = {
+          description: values.description,
+          report_type: values.report_type,
+          matatu_id: values.matatu_id ? parseInt(values.matatu_id) : null,
+          route_id: values.route_id ? parseInt(values.route_id) : null,
+        };
+
         if (reportId) {
-          await updateReport(reportId, values);
+          await updateReport(reportId, payload);
           Alert.alert("Success", "Report updated successfully");
         } else {
-          await createReport(values);
+          await createReport(payload);
           Alert.alert("Success", "Report created successfully");
         }
         navigation.goBack();
       } catch (error) {
-        Alert.alert("Error", error.message);
+        Alert.alert(
+          "Error",
+          error.response?.data?.error || "Failed to submit report"
+        );
+      } finally {
+        setLoading(false);
       }
     },
   });
