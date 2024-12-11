@@ -2,13 +2,37 @@
 
 import api from './config';
 
+// In payment.js
+// src/api/payment.js
+export const initiatePayment = async (paymentData) => {
+  try {
+    // Change from '/api/payment' to '/payment/payments'
+    const response = await api.post('/payment/payments', paymentData);
+    return response.data;
+  } catch (error) {
+    console.error('Error initiating payment:', error.response?.data || error);
+    throw error;
+  }
+};
+
+export const getPaymentStatus = async (transactionId) => {
+  try {
+    const response = await api.get(`/payments/${transactionId}/status`);
+    return response.data;
+  } catch (error) {
+    console.error('Error checking payment status:', error.message);
+    throw error;
+  }
+};
+
 /**
  * Fetch all payment methods for the user.
  * @returns {Promise<Array>} An array of payment method objects.
  */
 export const getPaymentMethods = async () => {
   try {
-    const response = await api.get('/payment/methods'); // Ensure this endpoint exists
+    // Change from /payment/methods to /api/payment/methods to match backend routes
+    const response = await api.get('/api/payment/methods');
     return response.data;
   } catch (error) {
     console.error('Error fetching payment methods:', error.message);

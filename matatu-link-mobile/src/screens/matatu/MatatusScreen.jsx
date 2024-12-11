@@ -240,60 +240,106 @@ const MatatusScreen = ({ navigation }) => {
   );
 };
 
-// src/screens/matatu/MatatusScreen.jsx
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
-    paddingHorizontal: 10,
-    paddingTop: 10,
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 12,
+    paddingTop: 8,
   },
-  loaderContainer: {
+  loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#FFFFFF",
   },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 50,
+    paddingVertical: 60,
+    backgroundColor: "#F7F9FC",
+    borderRadius: 12,
+    margin: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
   emptyText: {
-    fontSize: 18,
-    color: "#A9A9A9",
+    fontSize: 16,
+    color: "#8F9BB3",
     textAlign: "center",
+    fontWeight: "500",
+    letterSpacing: 0.25,
   },
   flatListContainer: {
     flexGrow: 1,
     justifyContent: "center",
+    paddingHorizontal: 16,
   },
   fabContainer: {
     position: "absolute",
-    bottom: 20,
-    right: 20,
-    flexDirection: "column",
+    right: 16,
+    bottom: 16,
     alignItems: "flex-end",
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
   },
   fab: {
-    marginBottom: 10,
+    marginBottom: 8,
+    borderRadius: 28,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
   },
   fabAdd: {
-    backgroundColor: "#34C759",
+    backgroundColor: "#00C853",
   },
   fabEdit: {
-    backgroundColor: "#FF9500",
+    backgroundColor: "#2196F3",
   },
   fabDelete: {
     backgroundColor: "#FF3B30",
   },
   fabCancel: {
-    backgroundColor: "#8E8E93",
+    backgroundColor: "#757575",
   },
   adminMenuContainer: {
-    marginBottom: 70,
+    position: "absolute",
+    right: 0,
+    bottom: 70,
+    flexDirection: "column",
     alignItems: "flex-end",
+    padding: 8,
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: 12,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  refreshIndicator: {
+    color: "#2196F3",
   },
 });
 

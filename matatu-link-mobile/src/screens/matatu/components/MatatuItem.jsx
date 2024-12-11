@@ -39,23 +39,26 @@ const MatatuItem = ({ matatu, onPress, selectionMode, selected }) => {
   );
 };
 
-// src/screens/matatu/components/MatatuItem.jsx
 const styles = StyleSheet.create({
   card: {
-    marginBottom: 10,
-    borderRadius: 8,
-    backgroundColor: "#FFFFFF",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    marginBottom: 12,
+    borderRadius: 10,
+    backgroundColor: "#F9F9F9",
+    elevation: 3,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
   },
   detailText: {
     fontSize: 14,
-    color: "#555555",
-    marginTop: 4,
+    color: "#333333",
+    marginVertical: 2,
   },
 });
+
 
 export default MatatuItem;

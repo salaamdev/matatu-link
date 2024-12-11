@@ -160,8 +160,9 @@ const AddEditRouteScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 10,
     backgroundColor: "#ffffff",
+    paddingBottom: 20,
   },
   loaderContainer: {
     flex: 1,
@@ -169,14 +170,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
+    color: "#333333",
+    marginBottom: 15,
     textAlign: "center",
-    marginBottom: 20,
-    color: "#007AFF",
   },
   input: {
-    marginBottom: 10,
+    marginBottom: 15,
+    backgroundColor: "#f8f8f8",
+    borderRadius: 10,
   },
   switchContainer: {
     flexDirection: "row",
@@ -186,20 +189,29 @@ const styles = StyleSheet.create({
   switchLabel: {
     flex: 1,
     fontSize: 16,
+    color: "#333333",
   },
   switchButton: {
     flex: 1,
+    backgroundColor: "#007AFF",
+    borderRadius: 10,
+    justifyContent: "center",
   },
   submitButton: {
     marginTop: 20,
-    padding: 5,
+    backgroundColor: "#34C759",
+    paddingVertical: 10,
+    borderRadius: 10,
+    elevation: 3,
   },
   errorText: {
     fontSize: 14,
     color: "#FF3B30",
-    marginBottom: 5,
     marginLeft: 5,
+    marginTop: -10,
+    marginBottom: 15,
   },
 });
+
 
 export default AddEditRouteScreen;

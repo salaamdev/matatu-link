@@ -43,7 +43,7 @@ app.use('/api/votes', voteRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/fares', fareRoutes);
-app.use('/api/payments', paymentRoutes);
+app.use('/api/payment', paymentRoutes); // Update the path if different
 app.use('/api/users', userRoutes);
 
 // Socket.io setup

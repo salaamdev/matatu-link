@@ -159,22 +159,28 @@ const ContributionsTab = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
-    backgroundColor: "#ffffff",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: "#F9F9F9",
   },
   loaderContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#FFFFFF",
   },
   emptyContainer: {
     alignItems: "center",
-    marginTop: 50,
+    marginTop: 60,
+    paddingHorizontal: 20,
   },
   emptyText: {
-    fontSize: 18,
-    color: "#666666",
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#888888",
+    textAlign: "center",
   },
 });
+
 
 export default ContributionsTab;

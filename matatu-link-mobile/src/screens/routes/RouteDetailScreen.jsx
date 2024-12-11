@@ -1,4 +1,3 @@
-// src/screens/routes/RouteDetailScreen.jsx
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -7,7 +6,7 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import { Text, Card, Button, List, Divider } from "react-native-paper";
+import { Text, Card, Button, List } from "react-native-paper";
 import { getRouteById, deleteRoute } from "../../api/routes";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useAuth } from "../../contexts/AuthContext";
@@ -215,19 +214,20 @@ const RouteDetailScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-    backgroundColor: "#ffffff",
+    padding: 15,
+    backgroundColor: "#F9F9F9",
     paddingBottom: 20,
   },
   card: {
-    borderRadius: 10,
-    elevation: 3,
+    borderRadius: 12,
+    elevation: 4,
+    backgroundColor: "#FFFFFF",
   },
   cardSpacing: {
-    marginTop: 15,
+    marginTop: 16,
   },
   detailText: {
-    fontSize: 14,
+    fontSize: 15,
     marginVertical: 4,
     color: "#333333",
   },
@@ -236,15 +236,15 @@ const styles = StyleSheet.create({
     color: "#666666",
     fontStyle: "italic",
     textAlign: "center",
-    marginVertical: 10,
+    marginVertical: 12,
   },
   adminActions: {
-    marginTop: 20,
+    marginTop: 25,
     alignItems: "center",
   },
   button: {
     width: "80%",
-    marginVertical: 5,
+    marginVertical: 8,
   },
   deleteButton: {
     backgroundColor: "#FF3B30",

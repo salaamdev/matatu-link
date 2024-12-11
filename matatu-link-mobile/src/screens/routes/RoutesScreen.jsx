@@ -15,6 +15,7 @@ import RouteAdminActionButton from "../../components/common/RouteAdminActionButt
 import { getRoutes, deleteRoute } from "../../api/routes";
 import { useAuth } from "../../contexts/AuthContext";
 
+
 const RoutesScreen = ({ navigation }) => {
   const [routes, setRoutes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -160,24 +161,99 @@ const RoutesScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#F5F6FA", // Subtle light background for a clean appearance
+    paddingHorizontal: 10, // Add horizontal padding for overall layout spacing
   },
   loaderContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#ffffff", // Keeps it consistent with app theme
+    borderRadius: 10,
+    margin: 20, // Provides spacing from the edges
+    elevation: 5, // Adds depth with shadow
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   emptyContainer: {
     alignItems: "center",
-    marginTop: 50,
+    justifyContent: "center",
+    marginHorizontal: 20,
+    padding: 20,
+    borderRadius: 10,
+    backgroundColor: "#ffffff",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   emptyText: {
     fontSize: 18,
-    color: "#666666",
+    color: "#888888", // Subtle gray for secondary text
+    textAlign: "center",
+    fontWeight: "500",
+    lineHeight: 24, // Improves readability
   },
   flatListContainer: {
     flexGrow: 1,
     justifyContent: "center",
+    paddingBottom: 20, // Prevent content from touching edges
+  },
+  listItem: {
+    flexDirection: "row",
+    padding: 15,
+    marginVertical: 5,
+    marginHorizontal: 10,
+    borderRadius: 8,
+    backgroundColor: "#ffffff",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  listItemText: {
+    fontSize: 16,
+    color: "#333333", // Dark text for better contrast
+    flex: 1,
+    fontWeight: "500",
+  },
+  listItemSelected: {
+    borderWidth: 2,
+    borderColor: "#007AFF", // Highlight selected item
+  },
+  actionButton: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    backgroundColor: "#007AFF",
+    borderRadius: 50,
+    width: 56,
+    height: 56,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  actionButtonIcon: {
+    fontSize: 24,
+    color: "#ffffff",
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#333333",
+    marginTop: 10,
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  refreshControl: {
+    tintColor: "#007AFF", // Matches primary color theme
   },
 });
 

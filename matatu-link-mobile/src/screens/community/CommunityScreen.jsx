@@ -31,8 +31,11 @@ const CommunityScreen = () => {
             {...props}
             indicatorStyle={{ backgroundColor: "#007AFF" }}
             style={{ backgroundColor: "#ffffff" }}
-            labelStyle={{ color: "#000000" }}
+            activeColor="#007AFF" // Color for active tab text
+            inactiveColor="#666666" // Color for inactive tab text
+            labelStyle={{ fontWeight: "600" }} // Optional: makes text a bit bolder
           />
+
         )}
       />
     </View>
@@ -46,3 +49,12 @@ const styles = StyleSheet.create({
 });
 
 export default CommunityScreen;
+
+{/* <TabBar
+  {...props}
+  indicatorStyle={{ backgroundColor: "#007AFF" }}
+  style={{ backgroundColor: "#ffffff" }}
+  activeColor="#007AFF" // Color for active tab text
+  inactiveColor="#666666" // Color for inactive tab text
+  labelStyle={{ fontWeight: "600" }} // Optional: makes text a bit bolder
+/>; */}
