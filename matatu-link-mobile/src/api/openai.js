@@ -3,7 +3,7 @@
 import axios from 'axios';
 
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = '';
 
 const systemPrompt = `You are a Kenyan matatu route expert. Generate realistic route information for traveling between two locations in Nairobi. 
 Respond in the following JSON format only:
